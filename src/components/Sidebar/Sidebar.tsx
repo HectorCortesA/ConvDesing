@@ -224,8 +224,8 @@ export default function Sidebar({
                         ? "text-white"
                         : "text-black"
                       : isDarkMode
-                        ? "text-zinc-400"
-                        : "text-zinc-600"
+                        ? "text-white"
+                        : "text-white"
                   }`}
                 >
                   <Icon
@@ -249,7 +249,7 @@ export default function Sidebar({
                               ? "text-white"
                               : "text-black"
                             : isDarkMode
-                              ? "text-zinc-300"
+                              ? "text-zinc-200"
                               : "text-zinc-700"
                         }`}
                       >
@@ -261,7 +261,7 @@ export default function Sidebar({
                           <div
                             className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors shadow-sm ${
                               isDarkMode
-                                ? "bg-black/40 border-white/10 text-zinc-400 hover:text-white hover:bg-white/20"
+                                ? "bg-black/40 border-white/10 text-white hover:text-white hover:bg-white/20"
                                 : "bg-white/80 border-black/10 text-zinc-600 hover:text-black hover:bg-black/10"
                             }`}
                           >
@@ -277,9 +277,7 @@ export default function Sidebar({
                         )}
                         {item.subItems && (
                           <div
-                            className={
-                              isDarkMode ? "text-zinc-500" : "text-zinc-400"
-                            }
+                            className={isDarkMode ? "text-black" : "text-white"}
                           >
                             {expandedItem === item.id ? (
                               <ChevronUp size={18} />

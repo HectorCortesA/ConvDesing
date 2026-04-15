@@ -249,10 +249,10 @@ export function PaletteExtractor() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto p-4 md:p-8">
+    <div className="w-full  mx-auto p-4 md:p-8">
       {/* Encabezado */}
       <header className="mb-8 text-center md:text-left">
-        <h1 className="text-3xl md:text-5xl font-bold mb-2 tracking-tight text-white flex items-center justify-center md:justify-start gap-3">
+        <h1 className="text-3xl md:text-5xl font-bold mb-2 tracking-tight text-black dark:text-white flex items-center justify-center md:justify-start gap-3">
           Paleta de Colores
         </h1>
         <p className="text-zinc-400 text-lg max-w-2xl mx-auto md:mx-0">

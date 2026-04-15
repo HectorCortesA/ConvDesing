@@ -10,7 +10,7 @@ function App() {
 
   return (
     <div
-      className="flex h-screen w-screen overflow-hidden"
+      className="flex h-screen w-screen overflow-hidden "
       style={{
         margin: 0,
         padding: 0,

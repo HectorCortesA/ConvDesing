@@ -354,11 +354,11 @@ export function ImageConverter() {
   const convertedCount = images.filter((i) => i.convertedUrl).length;
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-4 md:p-8">
+    <div className="w-full mx-auto p-4 md:p-8">
       {/* Encabezado */}
       <header className="mb-8 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl md:text-5xl font-bold mb-2 tracking-tight text-white">
+          <h1 className="text-3xl md:text-5xl font-bold mb-2 tracking-tight text-black dark:text-white">
             Convertidor Múltiple
           </h1>
           <p className="text-zinc-400 text-lg max-w-2xl">
