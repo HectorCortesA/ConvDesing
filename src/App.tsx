@@ -10,24 +10,18 @@ function App() {
 
   return (
     <div
+      className="flex h-screen w-screen overflow-hidden"
       style={{
-        display: "flex",
-        height: "100vh",
-        width: "100vw", // Cambia a 100vw
-        overflow: "hidden", // Previene scroll innecesario
         margin: 0,
         padding: 0,
       }}
     >
       <Sidebar onItemChange={setActiveMenuId} />
       <main
+        className="flex-1 overflow-y-auto overflow-x-hidden"
         style={{
-          flex: 1,
-          overflowY: "auto",
-          overflowX: "hidden", // Previene scroll horizontal
-          height: "100vh",
-          minWidth: 0, // Importante para que flex: 1 funcione correctamente
-          // O el color que quieras
+          margin: 0,
+          padding: 0,
         }}
       >
         {Component ? <Component /> : <div>Selecciona una opción del menú</div>}

@@ -17,10 +17,12 @@ import {
 
 interface SidebarProps {
   onItemChange: (itemId: string) => void;
+  isDarkMode?: boolean; // 👈 Prop opcional para recibir el tema
 }
 
 export default function Sidebar({
   onItemChange,
+  isDarkMode = true, // Valor por defecto
 }: SidebarProps): React.ReactElement {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [expandedItem, setExpandedItem] = useState<string | null>("income");
@@ -85,40 +87,52 @@ export default function Sidebar({
     } else {
       setActiveItem(item.id);
       setPopoverState(null);
-      onItemChange(item.id); // 👈 Notificar cambio de item
+      onItemChange(item.id);
     }
   };
 
   const handleSubItemClick = (subItemId: string) => {
     setActiveSubItem(subItemId);
     if (isCollapsed) setPopoverState(null);
-    onItemChange(subItemId); // 👈 Notificar cambio de subitem
+    onItemChange(subItemId);
   };
 
   const TreeMenu = ({ items }: { items: SubItem[] }) => (
     <div className="relative flex flex-col gap-1 w-full pl-5 py-1 mt-1">
       {/* Vertical connector line */}
-      <div className="absolute left-[7px] top-4 bottom-5 w-[2px] bg-white/10 rounded-full" />
+      <div className="absolute left-[7px] top-4 bottom-5 w-[2px] bg-current opacity-10 rounded-full" />
 
       {items.map((sub) => {
         const isActive = activeSubItem === sub.id;
         return (
           <div key={sub.id} className="relative flex items-center group w-full">
             {/* Horizontal connector line */}
-            <div className="absolute left-[-13px] top-1/2 -translate-y-1/2 w-4 h-[2px] bg-white/10" />
+            <div className="absolute left-[-13px] top-1/2 -translate-y-1/2 w-4 h-[2px] bg-current opacity-10" />
             <button
               onClick={() => handleSubItemClick(sub.id)}
               className={`flex-1 flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                 isActive
-                  ? "bg-white/10 text-white shadow-sm"
-                  : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                  ? isDarkMode
+                    ? "bg-white/10 text-white shadow-sm"
+                    : "bg-black/5 text-black shadow-sm"
+                  : isDarkMode
+                    ? "text-zinc-400 hover:bg-white/5 hover:text-white"
+                    : "text-zinc-600 hover:bg-black/5 hover:text-black"
               }`}
             >
               {sub.label}
               {sub.hasArrow && (
                 <ChevronRight
                   size={16}
-                  className={isActive ? "text-white" : "text-zinc-500"}
+                  className={
+                    isActive
+                      ? isDarkMode
+                        ? "text-white"
+                        : "text-black"
+                      : isDarkMode
+                        ? "text-zinc-500"
+                        : "text-zinc-400"
+                  }
                 />
               )}
             </button>
@@ -133,7 +147,11 @@ export default function Sidebar({
       ref={sidebarRef}
       initial={false}
       animate={{ width: isCollapsed ? 88 : 280 }}
-      className="h-min bg-black/40 backdrop-blur-xl border-r border-white/10 flex flex-col relative z-[100] shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.5)]"
+      className={`fixed left-0 top-0 h-screen flex flex-col relative z-[100] shrink-0 transition-colors duration-300 ${
+        isDarkMode
+          ? "bg-black/40 backdrop-blur-xl border-r border-white/10 shadow-[4px_0_24px_rgba(0,0,0,0.5)]"
+          : "bg-white/80 backdrop-blur-xl border-r border-black/10 shadow-[4px_0_24px_rgba(0,0,0,0.1)]"
+      }`}
     >
       {/* Toggle Button */}
       <button
@@ -141,7 +159,11 @@ export default function Sidebar({
           setIsCollapsed(!isCollapsed);
           setPopoverState(null);
         }}
-        className="absolute -right-4 top-8 w-8 h-8 bg-black/60 backdrop-blur-md border border-white/10 shadow-sm rounded-full flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 hover:shadow-md transition-all z-[110]"
+        className={`absolute -right-4 top-8 w-8 h-8 backdrop-blur-md border shadow-sm rounded-full flex items-center justify-center transition-all z-[110] ${
+          isDarkMode
+            ? "bg-black/60 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 hover:shadow-md"
+            : "bg-white/90 border-black/10 text-zinc-600 hover:text-black hover:bg-black/5 hover:shadow-md"
+        }`}
       >
         {isCollapsed ? (
           <ChevronRight size={16} strokeWidth={2.5} />
@@ -152,9 +174,23 @@ export default function Sidebar({
 
       {/* Logo Area */}
       <div className="p-6 flex items-center">
-        <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center shrink-0 shadow-inner">
-          <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
-            <div className="w-2.5 h-2.5 bg-black/80 rounded-full" />
+        <div
+          className={`w-12 h-12 border rounded-2xl flex items-center justify-center shrink-0 shadow-inner transition-colors duration-300 ${
+            isDarkMode
+              ? "bg-white/5 border-white/10"
+              : "bg-black/5 border-black/10"
+          }`}
+        >
+          <div
+            className={`w-5 h-5 rounded-full flex items-center justify-center transition-colors duration-300 ${
+              isDarkMode ? "bg-white" : "bg-black"
+            }`}
+          >
+            <div
+              className={`w-2.5 h-2.5 rounded-full transition-colors duration-300 ${
+                isDarkMode ? "bg-black/80" : "bg-white/80"
+              }`}
+            />
           </div>
         </div>
       </div>
@@ -173,12 +209,24 @@ export default function Sidebar({
                 onClick={(e) => handleItemClick(item, e)}
                 className={`menu-item-btn w-full flex items-center gap-3 px-3 py-3 rounded-2xl transition-colors relative ${
                   isActive && !isCollapsed
-                    ? "bg-white/10 shadow-sm"
-                    : "hover:bg-white/5"
+                    ? isDarkMode
+                      ? "bg-white/10 shadow-sm"
+                      : "bg-black/5 shadow-sm"
+                    : isDarkMode
+                      ? "hover:bg-white/5"
+                      : "hover:bg-black/5"
                 } ${isCollapsed ? "justify-center" : ""}`}
               >
                 <div
-                  className={`shrink-0 ${isActive && !isCollapsed ? "text-white" : "text-zinc-400"}`}
+                  className={`shrink-0 transition-colors duration-300 ${
+                    isActive && !isCollapsed
+                      ? isDarkMode
+                        ? "text-white"
+                        : "text-black"
+                      : isDarkMode
+                        ? "text-zinc-400"
+                        : "text-zinc-600"
+                  }`}
                 >
                   <Icon
                     size={22}
@@ -195,14 +243,28 @@ export default function Sidebar({
                       className="flex flex-1 items-center justify-between whitespace-nowrap overflow-hidden"
                     >
                       <span
-                        className={`text-[15px] font-semibold ${isActive ? "text-white" : "text-zinc-300"}`}
+                        className={`text-[15px] font-semibold transition-colors duration-300 ${
+                          isActive
+                            ? isDarkMode
+                              ? "text-white"
+                              : "text-black"
+                            : isDarkMode
+                              ? "text-zinc-300"
+                              : "text-zinc-700"
+                        }`}
                       >
                         {item.label}
                       </span>
 
                       <div className="flex items-center gap-2">
                         {item.hasPlus && (
-                          <div className="w-5 h-5 rounded-full bg-black/40 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/20 transition-colors shadow-sm">
+                          <div
+                            className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors shadow-sm ${
+                              isDarkMode
+                                ? "bg-black/40 border-white/10 text-zinc-400 hover:text-white hover:bg-white/20"
+                                : "bg-white/80 border-black/10 text-zinc-600 hover:text-black hover:bg-black/10"
+                            }`}
+                          >
                             <Plus size={12} />
                           </div>
                         )}
@@ -214,7 +276,11 @@ export default function Sidebar({
                           </span>
                         )}
                         {item.subItems && (
-                          <div className="text-zinc-500">
+                          <div
+                            className={
+                              isDarkMode ? "text-zinc-500" : "text-zinc-400"
+                            }
+                          >
                             {expandedItem === item.id ? (
                               <ChevronUp size={18} />
                             ) : (
@@ -253,12 +319,24 @@ export default function Sidebar({
                     style={{ top: popoverState.top, left: popoverState.left }}
                   >
                     {/* Tooltip Header */}
-                    <div className="bg-zinc-900/80 backdrop-blur-md text-white text-sm font-semibold px-4 py-2.5 rounded-xl w-max shadow-lg border border-white/10">
+                    <div
+                      className={`backdrop-blur-md text-sm font-semibold px-4 py-2.5 rounded-xl w-max shadow-lg border ${
+                        isDarkMode
+                          ? "bg-zinc-900/80 text-white border-white/10"
+                          : "bg-white/90 text-black border-black/10"
+                      }`}
+                    >
                       {item.label}
                     </div>
 
                     {/* Popover Body */}
-                    <div className="bg-black/50 backdrop-blur-xl rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] p-3 border border-white/10 ml-2">
+                    <div
+                      className={`backdrop-blur-xl rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] p-3 border ml-2 ${
+                        isDarkMode
+                          ? "bg-black/50 border-white/10"
+                          : "bg-white/90 border-black/10"
+                      }`}
+                    >
                       <TreeMenu items={item.subItems} />
                     </div>
                   </div>,
