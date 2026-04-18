@@ -361,7 +361,7 @@ export function ImageConverter() {
           <h1 className="text-3xl md:text-5xl font-bold mb-2 tracking-tight text-black dark:text-white">
             Convertidor Múltiple
           </h1>
-          <p className="text-zinc-400 text-lg max-w-2xl">
+          <p className="text-black dark:text-white text-lg max-w-2xl">
             Sube varias imágenes, ajusta sus formatos y descárgalas en un
             archivo ZIP.
           </p>
@@ -378,7 +378,7 @@ export function ImageConverter() {
             </button>
             <button
               onClick={() => setImages([])}
-              className="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-xl hover:bg-red-500/20 transition-all flex items-center gap-2 text-sm font-medium text-red-400"
+              className="px-4 py-2 bg-red-500/30 border border-red-500/50 rounded-xl hover:bg-red-500/20 transition-all flex items-center gap-2 text-sm font-medium text-red-700"
             >
               <Trash2 size={16} />
               Limpiar todo
@@ -388,10 +388,10 @@ export function ImageConverter() {
       </header>
 
       {/* Barra superior de controles globales */}
-      <div className="bg-zinc-900/80 border border-zinc-800 rounded-3xl p-6 mb-8 shadow-2xl backdrop-blur-xl">
+      <div className=" border-zinc-800 rounded-3xl p-6 mb-8 shadow-2xl backdrop-blur-lg bg-white/8">
         <div className="flex flex-col md:flex-row gap-8 justify-between items-start md:items-center">
           <div className="flex-1 w-full">
-            <h3 className="text-sm font-medium text-zinc-400 mb-3 uppercase tracking-wider">
+            <h3 className="text-sm font-medium text-black dark:text-white mb-3 uppercase tracking-wider">
               Formato de Salida Predeterminado
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -404,16 +404,16 @@ export function ImageConverter() {
                     onClick={() => handleGlobalFormatChange(f.id)}
                     className={`flex flex-col items-center justify-center p-3 rounded-2xl border transition-all ${
                       isActive
-                        ? "bg-zinc-800 border-zinc-600 shadow-lg"
-                        : `bg-zinc-950 border-zinc-800/50 ${f.hover}`
+                        ? "backdrop-blur-lg bg-white/20 shadow-lg"
+                        : `backdrop-blur-lg bg-white/10  ${f.hover}`
                     }`}
                   >
                     <Icon
                       size={24}
-                      className={`mb-2 ${isActive ? f.color : "text-zinc-500"}`}
+                      className={`mb-2 ${isActive ? f.color : "text-balck"}`}
                     />
                     <span
-                      className={`text-xs font-semibold ${isActive ? "text-white" : "text-zinc-500"}`}
+                      className={`text-xs font-semibold ${isActive ? "text-black dark:text-white" : "text-black dark:text-white"}`}
                     >
                       {f.label}
                     </span>
@@ -426,20 +426,20 @@ export function ImageConverter() {
           <div className="w-px h-16 bg-zinc-800 hidden md:block"></div>
 
           <div className="w-full md:w-80">
-            <h3 className="text-sm font-medium text-zinc-400 mb-3 uppercase tracking-wider">
-              Calidad (Si Aplica)
+            <h3 className="text-sm font-medium text-black dark:text-white mb-3 uppercase tracking-wider">
+              Calidad
             </h3>
             <div className="flex flex-col gap-2">
-              <div className="flex flex-col bg-zinc-950 border border-zinc-800 rounded-xl p-3">
+              <div className="flex flex-col backdrop-blur-lg bg-white/40 rounded-xl p-3">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs text-zinc-500">
+                  <span className="text-xs text-black dark:text-white">
                     {globalFormat === "image/jpeg" ||
                     globalFormat === "image/webp"
                       ? "Ajuste de Compresión"
                       : "Sin pérdida"}
                   </span>
                   <span
-                    className={`text-xs font-bold ${globalFormat === "image/jpeg" || globalFormat === "image/webp" ? "text-white" : "text-zinc-600"}`}
+                    className={`text-xs font-bold ${globalFormat === "image/jpeg" || globalFormat === "image/webp" ? "text-black dark:text-white" : "text-black dark:text-white"}`}
                   >
                     {globalQuality}%
                   </span>
@@ -484,8 +484,8 @@ export function ImageConverter() {
             exit={{ opacity: 0, y: -20 }}
             className={`relative w-full h-[400px] rounded-3xl border-2 border-dashed flex flex-col items-center justify-center transition-all cursor-pointer ${
               isDragging
-                ? "border-indigo-500 bg-indigo-500/5"
-                : "border-zinc-800 hover:border-zinc-600 bg-zinc-900/50 hover:bg-zinc-900"
+                ? "backdrop-blur-lg bg-white/20"
+                : "border-black hover:border-white backdrop-blur-lg bg-white/10"
             }`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -520,7 +520,7 @@ export function ImageConverter() {
           >
             {/* Barra lateral / Lista de imágenes (Panel Izquierdo) */}
             <div className="lg:col-span-3 flex flex-col gap-4">
-              <div className="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-4 flex flex-col h-[600px] shadow-xl">
+              <div className="backdrop-blur-lg bg-white/20  rounded-3xl p-4 flex flex-col h-[600px] shadow-xl">
                 <div className="flex items-center justify-between mb-4 px-2">
                   <h2 className="font-semibold text-zinc-200">
                     Galería ({images.length})
@@ -534,8 +534,8 @@ export function ImageConverter() {
                       onClick={() => setActiveIndex(idx)}
                       className={`relative group flex items-center p-2 rounded-xl cursor-pointer transition-all ${
                         activeIndex === idx
-                          ? "bg-indigo-500/20 border-indigo-500/50 border"
-                          : "bg-zinc-950/50 border-transparent border hover:border-zinc-700"
+                          ? "backdrop-blur-lg bg-white/10"
+                          : "bg-zinc-950/20 border-transparent border hover:border-zinc-700"
                       }`}
                     >
                       <div className="w-12 h-12 rounded-lg bg-black/50 overflow-hidden flex-shrink-0 relative">
@@ -560,11 +560,11 @@ export function ImageConverter() {
                       </div>
                       <div className="ml-3 overflow-hidden flex-1">
                         <p
-                          className={`text-sm truncate font-medium ${activeIndex === idx ? "text-indigo-300" : "text-zinc-300"}`}
+                          className={`text-sm truncate font-medium ${activeIndex === idx ? "text-black" : "text-zinc-300"}`}
                         >
                           {img.file.name}
                         </p>
-                        <p className="text-xs text-zinc-500 truncate">
+                        <p className="text-xs text-white truncate">
                           {formatBytes(img.convertedSize || img.originalSize)} •{" "}
                           {
                             FORMATS.find((f) => f.id === img.targetFormat)
@@ -602,7 +602,7 @@ export function ImageConverter() {
             </div>
 
             {/* Panel Central: Vista previa de la imagen activa */}
-            <div className="lg:col-span-6 bg-zinc-900/50 border border-zinc-800 rounded-3xl overflow-hidden flex flex-col h-[600px] shadow-2xl relative">
+            <div className="lg:col-span-6 backdrop-blur-lg bg-white/20 border-zinc-800 rounded-3xl overflow-hidden flex flex-col h-[600px] shadow-2xl relative">
               {activeImage ? (
                 <>
                   <div className="flex-1 p-6 flex items-center justify-center relative overflow-hidden bg-black/20">
@@ -624,8 +624,8 @@ export function ImageConverter() {
                     </AnimatePresence>
                   </div>
 
-                  <div className="h-16 bg-zinc-900/80 backdrop-blur-md border-t border-zinc-800 flex items-center justify-between px-6 text-sm">
-                    <div className="flex items-center gap-4 text-zinc-400">
+                  <div className="h-16 backdrop-blur-lg bg-white/20 border-t border-zinc-800 flex items-center justify-between px-6 text-sm">
+                    <div className="flex items-center gap-4 text-black">
                       <div className="flex items-center gap-1.5">
                         <FileImage size={16} />
                         <span className="truncate max-w-[150px]">
@@ -644,22 +644,22 @@ export function ImageConverter() {
                     </div>
 
                     <div className="flex items-center gap-3 font-medium">
-                      <span className="text-zinc-500 line-through decoration-zinc-500/50">
+                      <span className="text-black line-through decoration-zinc-500/50">
                         {activeImage.convertedUrl
                           ? formatBytes(activeImage.originalSize)
                           : ""}
                       </span>
                       {activeImage.convertedUrl && (
-                        <ArrowRight size={14} className="text-zinc-500" />
+                        <ArrowRight size={14} className="text-black" />
                       )}
                       <span
                         className={
                           activeImage.convertedUrl
                             ? activeImage.convertedSize <
                               activeImage.originalSize
-                              ? "text-green-400"
-                              : "text-yellow-400"
-                            : "text-zinc-300"
+                              ? "text-blue-500"
+                              : "text-blue-500"
+                            : "text-black"
                         }
                       >
                         {activeImage.convertedUrl
@@ -670,7 +670,7 @@ export function ImageConverter() {
                   </div>
                 </>
               ) : (
-                <div className="flex-1 flex items-center justify-center text-zinc-500">
+                <div className="flex-1 flex items-center justify-center text-dark ">
                   <p>Selecciona una imagen de la galería</p>
                 </div>
               )}
@@ -679,25 +679,28 @@ export function ImageConverter() {
             {/* Panel Derecho: Controles de conversión para la imagen activa */}
             <div className="lg:col-span-3 flex flex-col gap-4">
               {activeImage && (
-                <div className="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-5 flex flex-col gap-5">
+                <div className="backdrop-blur-lg bg-white/20 rounded-3xl p-5 flex flex-col gap-5">
                   <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
                     <div className="flex items-center gap-2 text-white font-semibold">
-                      <Settings2 size={18} className="text-indigo-400" />
+                      <Settings2
+                        size={18}
+                        className="text-white dark:text-white"
+                      />
                       <h2>Ajustes Específicos</h2>
                     </div>
-                    <label className="flex items-center gap-2 text-xs text-zinc-400 cursor-pointer">
+                    <label className="flex items-center gap-2 text-xs text-black dark:text-white cursor-pointer">
                       <input
                         type="checkbox"
                         checked={applyToAll}
                         onChange={(e) => setApplyToAll(e.target.checked)}
-                        className="rounded bg-zinc-800 border-zinc-700 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-zinc-900"
+                        className="rounded bg-white  text-black dark:text-white focus:ring-white focus:ring-offset-white/100"
                       />
                       Aplicar a todas
                     </label>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-zinc-400 mb-2">
+                    <label className="block text-sm font-medium text-black dark:text-white mb-2">
                       Formato de esta imagen
                     </label>
                     <div className="grid grid-cols-2 gap-2">
@@ -796,9 +799,9 @@ export function ImageConverter() {
               )}
 
               {/* Acciones en lote */}
-              <div className="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-5 flex flex-col gap-3 mt-auto shadow-xl">
-                <div className="text-sm font-medium text-zinc-400 mb-1 flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+              <div className="backdrop-blur-lg bg-white/20 rounded-3xl p-5 flex flex-col gap-3 mt-auto shadow-xl">
+                <div className="text-sm font-medium text-black dark:text-white mb-1 flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full "></div>
                   Acciones Globales
                 </div>
 
