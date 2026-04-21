@@ -21,7 +21,7 @@ function App() {
       <img
         src={fondo}
         alt="Fondo"
-        className="fixed top-0 left-0 w-full h-full object-cover -z-10 filter blur-sm opacity-95"
+        className="fixed top-0 left-0 w-full h-full object-cover -z-10 filter blur-sm opacity-95 "
       />
       <Sidebar onItemChange={setActiveMenuId} />
       <main
@@ -34,7 +34,7 @@ function App() {
         {Component ? (
           <Component />
         ) : (
-          <div className="flex items-center justify-center h-full w-full">
+          <div className="flex items-center justify-center h-full w-full p-30">
             <img src={title} alt="Title" className="h-32 object-contain" />
           </div>
         )}
