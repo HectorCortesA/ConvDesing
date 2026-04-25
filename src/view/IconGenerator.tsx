@@ -389,7 +389,7 @@ export default function IconGenerator() {
 
   return (
     <div className="w-full max-w-6xl mx-auto p-4 md:p-8">
-      <div className="bg-zinc-900/80 border border-zinc-800 rounded-3xl p-6 mb-8 shadow-2xl backdrop-blur-xl">
+      <div className="backdrop-blur-lg bg-white/8  rounded-3xl p-6 mb-8 shadow-2xl">
         <div className="flex flex-col md:flex-row gap-8 justify-between items-start md:items-center">
           <div className="flex-1 w-full">
             <h3 className="text-sm font-medium text-zinc-400 mb-3 uppercase tracking-wider">
@@ -403,10 +403,10 @@ export default function IconGenerator() {
                   <button
                     key={p.id}
                     onClick={() => handleOSChange(p.id)}
-                    className={`flex flex-col items-center justify-center p-3 rounded-2xl border transition-all ${
+                    className={`flex flex-col items-center justify-center p-3 rounded-2xl  transition-all ${
                       isActive
-                        ? `bg-zinc-800 border-zinc-600 shadow-lg`
-                        : `bg-zinc-950 border-zinc-800/50 ${p.hover}`
+                        ? `backdrop-blur-lg bg-white/8  shadow-lg`
+                        : `backdrop-blur-lg bg-white/8  ${p.hover}`
                     }`}
                   >
                     <Icon
@@ -424,21 +424,21 @@ export default function IconGenerator() {
             </div>
           </div>
 
-          <div className="w-px h-16 bg-zinc-800 hidden md:block"></div>
+          <div className="w-px h-16 bg-black dark:bg-white hidden md:block"></div>
 
           <div className="w-full md:w-80">
             <h3 className="text-sm font-medium text-zinc-400 mb-3 uppercase tracking-wider">
               Tamaño Ideal
             </h3>
             <div className="flex flex-col gap-2">
-              <div className="flex flex-wrap bg-zinc-950 border border-zinc-800 rounded-xl p-1">
+              <div className="flex flex-wrap backdrop-blur-lg bg-white/8 rounded-xl p-1">
                 {SIZES.map((s) => (
                   <button
                     key={s.id}
                     onClick={() => handleSizeChange(s.id)}
                     className={`flex-1 min-w-[60px] py-2 px-1 text-xs font-bold rounded-lg transition-all ${
                       targetSize === s.id
-                        ? "bg-zinc-800 text-white shadow-md"
+                        ? "backdrop-blur-lg bg-white/8  text-white shadow-md"
                         : "text-zinc-500 hover:text-zinc-300"
                     }`}
                   >
@@ -461,8 +461,8 @@ export default function IconGenerator() {
             exit={{ opacity: 0, scale: 0.95 }}
             className={`relative w-full h-[400px] rounded-3xl border-2 border-dashed flex flex-col items-center justify-center transition-all cursor-pointer group ${
               isDragging
-                ? "border-indigo-500 bg-indigo-500/10"
-                : "border-zinc-700 hover:border-zinc-500 bg-zinc-900/30 hover:bg-zinc-900/50"
+                ? "border-indigo-500 backdrop-blur-lg bg-white/8 "
+                : "border-zinc-700 hover:border-zinc-500 backdrop-blur-lg bg-white/8  hover:bg-zinc-600/50"
             }`}
             onDragOver={(e) => {
               e.preventDefault();
@@ -510,7 +510,7 @@ export default function IconGenerator() {
             className="grid grid-cols-1 lg:grid-cols-12 gap-6"
           >
             {/* Panel Izquierdo: Cropper */}
-            <div className="lg:col-span-7 bg-zinc-900/80 border border-zinc-800 rounded-3xl p-6 flex flex-col shadow-2xl">
+            <div className="lg:col-span-7 backdrop-blur-lg bg-white/8  rounded-3xl p-6 flex flex-col shadow-2xl">
               <div className="flex items-center gap-3 mb-4">
                 <CropIcon className="text-indigo-400" />
                 <h2 className="text-xl font-bold text-white">
@@ -531,7 +531,7 @@ export default function IconGenerator() {
                 />
               </div>
 
-              <div className="flex items-center gap-4 text-sm font-medium text-zinc-400 bg-zinc-950/50 p-4 rounded-xl border border-zinc-800 mt-4">
+              <div className="flex items-center gap-4 text-sm font-medium text-zinc-400 backdrop-blur-lg bg-white/8  p-4 rounded-xl  mt-4">
                 <span className="min-w-[40px]">Zoom</span>
                 <input
                   type="range"
@@ -551,7 +551,7 @@ export default function IconGenerator() {
             {/* Panel Derecho: Vista Previa y Ajustes de Estilo */}
             <div className="lg:col-span-5 flex flex-col gap-6">
               {/* Box de Vista Previa */}
-              <div className="bg-zinc-900/80 border border-zinc-800 rounded-3xl p-6 shadow-2xl flex flex-col items-center justify-center relative overflow-hidden">
+              <div className="backdrop-blur-lg bg-white/8  rounded-3xl p-6 shadow-2xl flex flex-col items-center justify-center relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0ibm9uZSI+PC9yZWN0Pgo8cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9IiMzMzMiPjwvcmVjdD4KPHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9IiMzMzMiPjwvcmVjdD4KPC9zdmc+')] opacity-10"></div>
 
                 <h3 className="text-sm font-bold text-zinc-500 mb-6 uppercase tracking-wider relative z-10 w-full text-center">
@@ -597,7 +597,7 @@ export default function IconGenerator() {
               </div>
 
               {/* Ajustes Visuales */}
-              <div className="bg-zinc-900/80 border border-zinc-800 rounded-3xl p-6 shadow-2xl flex-1 flex flex-col gap-6">
+              <div className="backdrop-blur-lg bg-white/8  rounded-3xl p-6 shadow-2xl flex-1 flex flex-col gap-6">
                 <div className="flex items-center gap-3">
                   <Palette className="text-indigo-400" />
                   <h2 className="text-xl font-bold text-white">
