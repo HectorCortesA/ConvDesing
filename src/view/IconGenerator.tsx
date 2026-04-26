@@ -607,27 +607,27 @@ export default function IconGenerator() {
 
                 {/* Forma */}
                 <div>
-                  <label className="block text-sm font-medium text-zinc-400 mb-2">
+                  <label className="block text-sm font-medium text-black dark:text-white mb-2">
                     Forma del Fondo
                   </label>
                   <div className="grid grid-cols-3 gap-2">
                     <button
                       onClick={() => setBgShape("square")}
-                      className={`py-2 flex flex-col items-center gap-1 rounded-xl border transition-all ${bgShape === "square" ? "bg-zinc-800 border-indigo-500 text-white" : "bg-zinc-950 border-zinc-800 text-zinc-500 hover:border-zinc-600"}`}
+                      className={`py-2 flex flex-col items-center gap-1 rounded-xl border transition-all ${bgShape === "square" ? "backdrop-blur-lg bg-white/8  text-black dark:text-white" : "backdrop-blur-lg bg-white/8  text-zinc-600 hover:border-zinc-600"}`}
                     >
                       <Square size={20} />
                       <span className="text-xs font-semibold">Cuadrado</span>
                     </button>
                     <button
                       onClick={() => setBgShape("rounded")}
-                      className={`py-2 flex flex-col items-center gap-1 rounded-xl border transition-all ${bgShape === "rounded" ? "bg-zinc-800 border-indigo-500 text-white" : "bg-zinc-950 border-zinc-800 text-zinc-500 hover:border-zinc-600"}`}
+                      className={`py-2 flex flex-col items-center gap-1 rounded-xl border transition-all ${bgShape === "rounded" ? "backdrop-blur-lg bg-white/8  text-black dark:text-white" : "backdrop-blur-lg bg-white/8  text-zinc-600 hover:border-zinc-600"}`}
                     >
                       <AppWindow size={20} />
                       <span className="text-xs font-semibold">Redondeado</span>
                     </button>
                     <button
                       onClick={() => setBgShape("circle")}
-                      className={`py-2 flex flex-col items-center gap-1 rounded-xl border transition-all ${bgShape === "circle" ? "bg-zinc-800 border-indigo-500 text-white" : "bg-zinc-950 border-zinc-800 text-zinc-500 hover:border-zinc-600"}`}
+                      className={`py-2 flex flex-col items-center gap-1 rounded-xl border transition-all ${bgShape === "circle" ? "backdrop-blur-lg bg-white/8  text-black dark:text-white" : "backdrop-blur-lg bg-white/8  text-zinc-600 hover:border-zinc-600"}`}
                     >
                       <Circle size={20} />
                       <span className="text-xs font-semibold">Círculo</span>
@@ -663,13 +663,13 @@ export default function IconGenerator() {
                             type="color"
                             value={bgColor}
                             onChange={(e) => setBgColor(e.target.value)}
-                            className="w-12 h-10 rounded-lg cursor-pointer bg-zinc-950 border border-zinc-800"
+                            className="w-12 h-10 rounded-lg cursor-pointer backdrop-blur-lg bg-white/20 "
                           />
                           <input
                             type="text"
                             value={bgColor}
                             onChange={(e) => setBgColor(e.target.value)}
-                            className="flex-1 bg-zinc-950 border border-zinc-800 rounded-lg px-3 text-sm text-white focus:outline-none focus:border-indigo-500 font-mono"
+                            className="flex-1 backdrop-blur-lg bg-white/8  rounded-lg px-3 text-sm text-black dark:text-white focus:outline-none focus:border-indigo-500 font-mono"
                             placeholder="#FFFFFF"
                           />
                         </div>
@@ -716,7 +716,7 @@ export default function IconGenerator() {
                 <div className="mt-auto pt-4 border-t border-zinc-800 flex gap-3">
                   <button
                     onClick={reset}
-                    className="px-4 py-3 rounded-xl bg-zinc-800/80 text-white font-semibold hover:bg-zinc-700 transition-all text-sm"
+                    className="px-4 py-3 rounded-xl backdrop-blur-lg bg-white/8  text-white font-semibold hover:bg-zinc-700 transition-all text-sm"
                   >
                     Cancelar
                   </button>
