@@ -3,8 +3,9 @@ import { Home, FileText, CalendarCheck, PieChart } from "lucide-react";
 import IconGenerator from "../view/IconGenerator";
 import { ImageConverter } from "../view/ImageConverter";
 import { PaletteExtractor } from "../view/PaletteExtractor";
-import { BackgroundRemover } from "../view/ Backgroundremover.tsx";
-import Vectorizer from "../view/Vectorizer";
+import { BackgroundRemover } from "../view/Backgroundremover";
+import Vectorizer from "../view/Vectorizer.tsx";
+import Configuracion from "../view/Configurancion.tsx";
 
 export type SubItem = {
   id: string;
@@ -61,6 +62,19 @@ export const SIDEBAR_MENU_ITEMS: MenuItem[] = [
         component: ImageConverter,
       },
     ],
+  },
+  {
+    id: "Vectorizador",
+    label: "Vectorizador",
+    icon: CalendarCheck,
+    component: Vectorizer,
+  },
+
+  {
+    id: "Configuracion",
+    label: "Configuracion",
+    icon: CalendarCheck,
+    component: Configuracion,
   },
 ];
 

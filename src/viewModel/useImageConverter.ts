@@ -3,7 +3,6 @@ import JSZip from "jszip";
 import {
   ImageItem,
   FormatId,
-  formatBytes,
   getFormatExtension,
   convertImageBlob,
   processImageFile,

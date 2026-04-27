@@ -1,27 +1,30 @@
 import { useState } from "react";
 import Sidebar from "./components/Sidebar/Sidebar";
 import { getComponentByMenuId } from "./routes/sidebarRoutes";
+import {
+  BackgroundProvider,
+  useBackground,
+} from "./contexts/BackgroundContext";
 import "./App.css";
-import fondo from "./assets/fondo.jpg";
 import title from "./assets/title.svg";
 
-function App() {
+function AppContent() {
   const [activeMenuId, setActiveMenuId] = useState("dashboard");
-
+  const { backgroundImage } = useBackground();
   const Component = getComponentByMenuId(activeMenuId);
 
   return (
     <div
-      className="flex h-screen w-screen overflow-hidden "
+      className="flex h-screen w-screen overflow-hidden"
       style={{
         margin: 0,
         padding: 0,
       }}
     >
       <img
-        src={fondo}
+        src={backgroundImage}
         alt="Fondo"
-        className="fixed top-0 left-0 w-full h-full object-cover -z-10 filter blur-sm opacity-95 "
+        className="fixed top-0 left-0 w-full h-full object-cover -z-10 filter blur-sm opacity-95 transition-all duration-300"
       />
       <Sidebar onItemChange={setActiveMenuId} />
       <main
@@ -40,6 +43,14 @@ function App() {
         )}
       </main>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <BackgroundProvider>
+      <AppContent />
+    </BackgroundProvider>
   );
 }
 

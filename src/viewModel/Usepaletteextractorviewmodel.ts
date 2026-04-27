@@ -7,7 +7,6 @@
 import { useState, useRef } from "react";
 import {
   PaletteExtractorState,
-  ColorInfo,
   initialState,
   extractDominantColors,
   pickColorFromImage,
