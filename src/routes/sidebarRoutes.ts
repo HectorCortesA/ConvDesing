@@ -3,7 +3,7 @@ import { Home, FileText, CalendarCheck, PieChart } from "lucide-react";
 import IconGenerator from "../view/IconGenerator";
 import { ImageConverter } from "../view/ImageConverter";
 import { PaletteExtractor } from "../view/PaletteExtractor";
-import { BackgroundRemover } from "../view/BackgroundRemover";
+import { BackgroundRemover } from "../view/ Backgroundremover.tsx";
 import Vectorizer from "../view/Vectorizer";
 
 export type SubItem = {

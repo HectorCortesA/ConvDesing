@@ -1,217 +1,46 @@
-import React, { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
-  UploadCloud,
   Download,
   RefreshCw,
   FileBox,
-  Eraser,
   ChevronsLeftRight,
   Palette,
-  Image as ImageIcon,
   Droplet,
   Sparkles,
   AlertTriangle,
 } from "lucide-react";
-
-type Step = "upload" | "processing" | "result";
-type BgMode = "transparent" | "color" | "blur";
-
-const PRESET_COLORS = [
-  "#FFFFFF",
-  "#000000",
-  "#2563EB",
-  "#DC2626",
-  "#16A34A",
-  "#EAB308",
-  "#9333EA",
-];
+import { useBackgroundRemoverViewModel } from "../viewModel/Usebackgroundremoverviewmodel";
+import { PRESET_COLORS } from "../model/ Backgroundremovermodel";
 
 export function BackgroundRemover() {
-  const [step, setStep] = useState<Step>("upload");
-  const [isDragging, setIsDragging] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const vm = useBackgroundRemoverViewModel();
+  const {
+    state,
+    fileInputRef,
+    containerRef,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+    handleFileSelect,
+    handleSliderMouseDown,
+    handleSliderTouchStart,
+    handleSliderTouchMove,
+    handleSliderTouchEnd,
+    setBgMode,
+    setBgColor,
+    handleDownload,
+    reset,
+  } = vm;
 
-  const [originalImage, setOriginalImage] = useState<string | null>(null);
-  const [resultImage, setResultImage] = useState<string | null>(null);
-  const [fileName, setFileName] = useState<string>("imagen");
-
-  // Slider State
-  const [sliderPos, setSliderPos] = useState(50);
-  const [isDraggingSlider, setIsDraggingSlider] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Styling State
-  const [bgMode, setBgMode] = useState<BgMode>("transparent");
-  const [bgColor, setBgColor] = useState<string>("#ffffff");
-
-  // ----------------------------------------------------------------------
-  // FAKE AI PROCESSING (Para demostración de UI)
-  // ----------------------------------------------------------------------
-  const processImageSimulation = async (file: File) => {
-    setStep("processing");
-    const originalUrl = URL.createObjectURL(file);
-    setOriginalImage(originalUrl);
-    setFileName(file.name.split(".")[0] || "imagen");
-
-    // Simular tiempo de red/procesamiento de IA
-    await new Promise((r) => setTimeout(r, 2500));
-
-    // Simular el recorte: Mantenemos un círculo central y difuminamos/borramos los bordes
-    try {
-      const img = new Image();
-      img.src = originalUrl;
-      await new Promise((r) => {
-        img.onload = r;
-      });
-
-      const canvas = document.createElement("canvas");
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) throw new Error("No 2D context");
-
-      // Dibujar imagen original
-      ctx.drawImage(img, 0, 0);
-
-      // Aplicar máscara para simular IA eliminando el fondo
-      ctx.globalCompositeOperation = "destination-in";
-      const centerX = img.width / 2;
-      const centerY = img.height / 2;
-      const radius = Math.min(img.width, img.height) * 0.45; // 45% del tamaño menor
-
-      const gradient = ctx.createRadialGradient(
-        centerX,
-        centerY,
-        radius * 0.5,
-        centerX,
-        centerY,
-        radius,
-      );
-      gradient.addColorStop(0, "rgba(0,0,0,1)");
-      gradient.addColorStop(0.8, "rgba(0,0,0,0.8)");
-      gradient.addColorStop(1, "rgba(0,0,0,0)");
-
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, img.width, img.height);
-
-      const resultUrl = canvas.toDataURL("image/png");
-      setResultImage(resultUrl);
-      setStep("result");
-    } catch (e) {
-      console.error(e);
-      alert("Error en el procesado de la imagen.");
-      setStep("upload");
-    }
-  };
-
-  const handleFileSelect = (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      alert("Por favor, selecciona un archivo de imagen válido.");
-      return;
-    }
-    processImageSimulation(file);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFileSelect(e.dataTransfer.files[0]);
-    }
-  };
-
-  // ----------------------------------------------------------------------
-  // SLIDER LOGIC
-  // ----------------------------------------------------------------------
-  const handleSliderMove = useCallback((clientX: number) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    let pos = ((clientX - rect.left) / rect.width) * 100;
-    pos = Math.max(0, Math.min(100, pos)); // Clamp entre 0 y 100
-    setSliderPos(pos);
-  }, []);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (isDraggingSlider) handleSliderMove(e.clientX);
-    };
-    const handleMouseUp = () => {
-      setIsDraggingSlider(false);
-    };
-
-    if (isDraggingSlider) {
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseup", handleMouseUp);
-    }
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [isDraggingSlider, handleSliderMove]);
-
-  // ----------------------------------------------------------------------
-  // DESCARGAR RESULTADO
-  // ----------------------------------------------------------------------
-  const handleDownload = async () => {
-    if (!resultImage || !originalImage) return;
-
-    // Si el usuario eligió un fondo, debemos mezclarlo en un canvas
-    if (bgMode === "transparent") {
-      const link = document.createElement("a");
-      link.href = resultImage;
-      link.download = `${fileName}_sin_fondo.png`;
-      link.click();
-    } else {
-      try {
-        const img = new Image();
-        img.src = resultImage;
-        await new Promise((r) => {
-          img.onload = r;
-        });
-
-        const canvas = document.createElement("canvas");
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-
-        if (bgMode === "color") {
-          ctx.fillStyle = bgColor;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-        } else if (bgMode === "blur") {
-          const orig = new Image();
-          orig.src = originalImage;
-          await new Promise((r) => {
-            orig.onload = r;
-          });
-          ctx.filter = "blur(20px)";
-          ctx.drawImage(orig, 0, 0, canvas.width, canvas.height);
-          ctx.filter = "none"; // reset
-        }
-
-        // Dibujar imagen recortada encima
-        ctx.drawImage(img, 0, 0);
-
-        const finalDataUrl = canvas.toDataURL("image/png");
-        const link = document.createElement("a");
-        link.href = finalDataUrl;
-        link.download = `${fileName}_fondo_${bgMode}.png`;
-        link.click();
-      } catch (err) {
-        console.error(err);
-      }
-    }
-  };
-
-  const reset = () => {
-    setStep("upload");
-    setOriginalImage(null);
-    setResultImage(null);
-    setSliderPos(50);
-    setBgMode("transparent");
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  };
+  const {
+    step,
+    isDragging,
+    originalImage,
+    resultImage,
+    sliderPos,
+    bgMode,
+    bgColor,
+  } = state;
 
   return (
     <div className="w-full mx-auto p-4 md:p-8">
@@ -229,8 +58,8 @@ export function BackgroundRemover() {
         </p>
       </header>
 
-      {/* Área Principal Dinámica */}
       <AnimatePresence mode="wait">
+        {/* ---- STEP: UPLOAD ---- */}
         {step === "upload" && (
           <motion.div
             key="dropzone"
@@ -242,19 +71,13 @@ export function BackgroundRemover() {
                 ? "border-pink-500 bg-pink-500/10"
                 : "border-zinc-700 hover:border-zinc-500 bg-zinc-900/30 hover:bg-zinc-900/50"
             }`}
-            onDragOver={(e) => {
-              e.preventDefault();
-              setIsDragging(true);
-            }}
-            onDragLeave={(e) => {
-              e.preventDefault();
-              setIsDragging(false);
-            }}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
           >
-            <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-pink-500/20 transition-all"></div>
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-indigo-500/20 transition-all"></div>
+            <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-pink-500/20 transition-all" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-indigo-500/20 transition-all" />
 
             <div className="w-24 h-24 bg-zinc-800/80 rounded-full flex items-center justify-center mb-6 shadow-2xl text-zinc-400 group-hover:scale-110 group-hover:text-pink-400 transition-all relative z-10">
               <FileBox size={40} />
@@ -282,6 +105,7 @@ export function BackgroundRemover() {
           </motion.div>
         )}
 
+        {/* ---- STEP: PROCESSING ---- */}
         {step === "processing" && originalImage && (
           <motion.div
             key="processing"
@@ -301,8 +125,6 @@ export function BackgroundRemover() {
                 className="w-full h-full object-cover opacity-50 grayscale"
                 alt="Procesando"
               />
-
-              {/* Línea de escaneo animada */}
               <motion.div
                 initial={{ top: "0%" }}
                 animate={{ top: "100%" }}
@@ -315,8 +137,6 @@ export function BackgroundRemover() {
                 transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
                 className="absolute left-0 right-0 h-20 bg-gradient-to-t from-pink-500/30 to-transparent -translate-y-full z-0"
               />
-
-              {/* Imagen revelándose con el escáner */}
               <motion.div
                 initial={{ height: "0%" }}
                 animate={{ height: "100%" }}
@@ -337,6 +157,7 @@ export function BackgroundRemover() {
           </motion.div>
         )}
 
+        {/* ---- STEP: RESULT ---- */}
         {step === "result" && originalImage && resultImage && (
           <motion.div
             key="result"
@@ -344,17 +165,15 @@ export function BackgroundRemover() {
             animate={{ opacity: 1, y: 0 }}
             className="grid grid-cols-1 lg:grid-cols-12 gap-6"
           >
-            {/* Panel Principal: Visor y Slider */}
+            {/* Panel visor con slider */}
             <div className="lg:col-span-8 bg-zinc-900/80 border border-zinc-800 rounded-3xl p-4 shadow-2xl flex flex-col h-[500px] md:h-[600px] relative">
-              {/* Contenedor del Editor / Comparador */}
               <div
                 className="flex-1 relative rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-800/50 flex items-center justify-center select-none"
                 ref={containerRef}
               >
-                {/* Patrón de transparencia de fondo */}
-                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0ibm9uZSI+PC9yZWN0Pgo8cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9IiMzMzMiPjwvcmVjdD4KPHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9IiMzMzMiPjwvcmVjdD4KPC9zdmc+')] opacity-20"></div>
+                {/* Patrón de transparencia */}
+                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0ibm9uZSI+PC9yZWN0Pgo8cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9IiMzMzMiPjwvcmVjdD4KPHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9IiMzMzMiPjwvcmVjdD4KPC9zdmc+')] opacity-20" />
 
-                {/* Fondo aplicado por el usuario */}
                 {bgMode === "color" && (
                   <div
                     className="absolute inset-0"
@@ -371,16 +190,12 @@ export function BackgroundRemover() {
                   </div>
                 )}
 
-                {/* Contenedor de las imágenes (mantiene aspect ratio) */}
                 <div className="relative w-full h-full flex items-center justify-center">
-                  {/* Imagen 1: Original (Debajo, Visible a la izquierda) */}
                   <img
                     src={originalImage}
                     className="absolute w-full h-full object-contain pointer-events-none"
                     alt="Original"
                   />
-
-                  {/* Imagen 2: Resultado (Encima, Recortada para ser visible solo a la derecha) */}
                   <img
                     src={resultImage}
                     className="absolute w-full h-full object-contain pointer-events-none drop-shadow-2xl"
@@ -395,19 +210,19 @@ export function BackgroundRemover() {
                       left: `${sliderPos}%`,
                       transform: "translateX(-50%)",
                     }}
-                    onMouseDown={() => setIsDraggingSlider(true)}
-                    onTouchStart={() => setIsDraggingSlider(true)}
-                    onTouchMove={(e) => handleSliderMove(e.touches[0].clientX)}
-                    onTouchEnd={() => setIsDraggingSlider(false)}
+                    onMouseDown={handleSliderMouseDown}
+                    onTouchStart={handleSliderTouchStart}
+                    onTouchMove={(e) =>
+                      handleSliderTouchMove(e.touches[0].clientX)
+                    }
+                    onTouchEnd={handleSliderTouchEnd}
                   >
-                    {/* Manija del Slider */}
                     <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-2xl text-zinc-900 border-2 border-zinc-200">
                       <ChevronsLeftRight size={20} />
                     </div>
                   </div>
                 </div>
 
-                {/* Etiquetas Antes/Después */}
                 <div className="absolute top-4 left-4 bg-black/50 backdrop-blur-md px-3 py-1 rounded-lg text-xs font-bold text-white border border-white/10 z-10">
                   Original
                 </div>
@@ -417,38 +232,44 @@ export function BackgroundRemover() {
               </div>
             </div>
 
-            {/* Panel Lateral: Herramientas y Exportación */}
+            {/* Panel lateral de herramientas */}
             <div className="lg:col-span-4 flex flex-col gap-4">
-              {/* Aviso para UI Simulada */}
               <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 flex gap-3 text-amber-400/90 items-start">
                 <AlertTriangle className="flex-shrink-0 mt-0.5" size={18} />
                 <p className="text-xs font-medium leading-relaxed">
-                  <strong>Simulación UI Activa.</strong> Esta interfaz simula
-                  visualmente la eliminación del fondo mediante una máscara
-                  circular. Para uso real, conecta una API (ej. Remove.bg) o un
-                  modelo local (ej. @imgly/background-removal) en el código.
+                  <strong>Simulación UI Activa.</strong> Para uso real, conecta
+                  una API (ej. Remove.bg) o modelo local.
                 </p>
               </div>
 
-              {/* Herramientas de Fondo */}
               <div className="bg-zinc-900/80 border border-zinc-800 rounded-3xl p-6 shadow-2xl flex flex-col gap-6 flex-1">
                 <div className="flex items-center gap-2">
                   <Palette className="text-pink-400" size={20} />
                   <h2 className="text-lg font-bold text-white">Fondo Nuevo</h2>
                 </div>
 
+                {/* Opción: transparente */}
                 <div className="flex flex-col gap-3">
                   <button
                     onClick={() => setBgMode("transparent")}
-                    className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${bgMode === "transparent" ? "bg-zinc-800 border-pink-500 text-white shadow-md" : "bg-zinc-950 border-zinc-800/50 text-zinc-400 hover:bg-zinc-900"}`}
+                    className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
+                      bgMode === "transparent"
+                        ? "bg-zinc-800 border-pink-500 text-white shadow-md"
+                        : "bg-zinc-950 border-zinc-800/50 text-zinc-400 hover:bg-zinc-900"
+                    }`}
                   >
-                    <div className="w-8 h-8 rounded-lg bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0ibm9uZSI+PC9yZWN0Pgo8cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9IiMzMzMiPjwvcmVjdD4KPHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9IiMzMzMiPjwvcmVjdD4KPC9zdmc+')] border border-zinc-700"></div>
+                    <div className="w-8 h-8 rounded-lg bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0ibm9uZSI+PC9yZWN0Pgo8cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9IiMzMzMiPjwvcmVjdD4KPHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9IiMzMzMiPjwvcmVjdD4KPC9zdmc+')] border border-zinc-700" />
                     <span className="font-semibold text-sm">Transparente</span>
                   </button>
 
+                  {/* Opción: blur */}
                   <button
                     onClick={() => setBgMode("blur")}
-                    className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${bgMode === "blur" ? "bg-zinc-800 border-pink-500 text-white shadow-md" : "bg-zinc-950 border-zinc-800/50 text-zinc-400 hover:bg-zinc-900"}`}
+                    className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
+                      bgMode === "blur"
+                        ? "bg-zinc-800 border-pink-500 text-white shadow-md"
+                        : "bg-zinc-950 border-zinc-800/50 text-zinc-400 hover:bg-zinc-900"
+                    }`}
                   >
                     <div className="w-8 h-8 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center overflow-hidden">
                       <Droplet size={16} className="text-zinc-400" />
@@ -458,8 +279,13 @@ export function BackgroundRemover() {
                     </span>
                   </button>
 
+                  {/* Opción: color sólido */}
                   <div
-                    className={`p-4 rounded-xl border transition-all ${bgMode === "color" ? "bg-zinc-800 border-pink-500 text-white shadow-md" : "bg-zinc-950 border-zinc-800/50 text-zinc-400"}`}
+                    className={`p-4 rounded-xl border transition-all ${
+                      bgMode === "color"
+                        ? "bg-zinc-800 border-pink-500 text-white shadow-md"
+                        : "bg-zinc-950 border-zinc-800/50 text-zinc-400"
+                    }`}
                   >
                     <button
                       onClick={() => setBgMode("color")}
@@ -468,7 +294,7 @@ export function BackgroundRemover() {
                       <div
                         className="w-8 h-8 rounded-lg border border-zinc-700"
                         style={{ backgroundColor: bgColor }}
-                      ></div>
+                      />
                       <span className="font-semibold text-sm">
                         Color Sólido
                       </span>
