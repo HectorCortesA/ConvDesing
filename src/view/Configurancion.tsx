@@ -3,7 +3,13 @@ import foto1 from "../assets/fondo.jpg";
 import { useBackground } from "../contexts/BackgroundContext";
 
 export default function Configuracion() {
-  const { backgroundImage, setBackgroundImage } = useBackground();
+  const {
+    backgroundImage,
+    setBackgroundImage,
+    savedImages,
+    addSavedImage,
+    removeSavedImage,
+  } = useBackground();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -18,6 +24,7 @@ export default function Configuracion() {
       reader.onload = (e) => {
         const imageUrl = e.target?.result as string;
         setBackgroundImage(imageUrl);
+        addSavedImage(imageUrl);
       };
       reader.readAsDataURL(file);
     }
@@ -25,6 +32,7 @@ export default function Configuracion() {
 
   const handlePresetBackground = (imageUrl: string) => {
     setBackgroundImage(imageUrl);
+    addSavedImage(imageUrl);
   };
 
   const openFileExplorer = () => {
@@ -102,6 +110,59 @@ export default function Configuracion() {
             </div>
           </div>
         </div>
+
+        {/* Saved images section */}
+        {savedImages.length > 0 && (
+          <div className="mt-8">
+            <p className="text-black dark:text-white text-lg mb-4 flex items-center justify-center md:justify-start gap-3">
+              Fondos guardados
+            </p>
+            <div className="overflow-x-auto pb-4">
+              <div className="flex gap-4 min-w-max">
+                {savedImages.map((image, index) => (
+                  <div key={index} className="relative flex-shrink-0 group">
+                    <div
+                      onClick={() => setBackgroundImage(image)}
+                      className={`w-32 h-32 rounded cursor-pointer overflow-hidden transition-all duration-300 ${
+                        backgroundImage === image
+                          ? "ring-4 ring-blue-500 shadow-lg"
+                          : "hover:shadow-lg hover:scale-105"
+                      }`}
+                    >
+                      <img
+                        src={image}
+                        alt={`Guardado ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeSavedImage(image);
+                      }}
+                      className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="Eliminar imagen guardada"
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

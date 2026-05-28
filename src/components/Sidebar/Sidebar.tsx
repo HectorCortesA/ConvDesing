@@ -277,7 +277,7 @@ export default function Sidebar({
                         )}
                         {item.subItems && (
                           <div
-                            className={isDarkMode ? "text-black" : "text-white"}
+                            className={isDarkMode ? "text-white" : "text-white"}
                           >
                             {expandedItem === item.id ? (
                               <ChevronUp size={18} />
@@ -299,7 +299,7 @@ export default function Sidebar({
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="overflow-hidden"
+                    className="overflow-hidden bg-white/5 rounded-xl mt-2 ml-2"
                   >
                     <TreeMenu items={item.subItems} />
                   </motion.div>
