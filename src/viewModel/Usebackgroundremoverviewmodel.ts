@@ -15,7 +15,7 @@ export function useBackgroundRemoverViewModel() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const maskCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const originalImageRef = useRef<HTMLImageElement | null>(null);
 
@@ -78,16 +78,33 @@ export function useBackgroundRemoverViewModel() {
     }
   }, [state.showMask]);
 
-  // Se ejecuta cuando el editor está listo y tenemos el tamaño de la imagen
+  const drawVisualCanvasRef = useRef(drawVisualCanvas);
+  useEffect(() => {
+    drawVisualCanvasRef.current = drawVisualCanvas;
+  }, [drawVisualCanvas]);
+
+  const fitToScreenRef = useRef(fitToScreen);
+  useEffect(() => {
+    fitToScreenRef.current = fitToScreen;
+  }, [fitToScreen]);
+
+  const setCanvasRef = useCallback((node: HTMLCanvasElement | null) => {
+    canvasRef.current = node;
+    if (node) {
+      // Esperamos a que se complete el renderizado y el layout para obtener las dimensiones correctas
+      setTimeout(() => {
+        fitToScreenRef.current();
+        drawVisualCanvasRef.current();
+      }, 100);
+    }
+  }, []);
+
+  // Redibujar el canvas cuando cambie showMask o esté listo
   useEffect(() => {
     if (state.step === "editor" && state.imageSize) {
-      fitToScreen();
-      // Esperamos el próximo frame para asegurar que el Canvas ya tiene el width/height correcto
-      requestAnimationFrame(() => {
-        drawVisualCanvas();
-      });
+      drawVisualCanvas();
     }
-  }, [state.step, state.imageSize, fitToScreen, drawVisualCanvas]);
+  }, [state.showMask, drawVisualCanvas]);
 
   const handleFileSelect = async (file: File) => {
     if (!file.type.startsWith("image/"))
@@ -110,7 +127,7 @@ export function useBackgroundRemoverViewModel() {
 
     try {
       const imageBlob = await removeBackground(originalUrl, {
-        progress: (key, current, total) => {
+        progress: (_key, current, total) => {
           if (total > 0)
             patch({ aiProgress: Math.round((current / total) * 100) });
         },
@@ -381,7 +398,7 @@ export function useBackgroundRemoverViewModel() {
     state,
     fileInputRef,
     containerRef,
-    canvasRef,
+    canvasRef: setCanvasRef,
     cursorPos,
     isHovering,
     handleDragOver,
