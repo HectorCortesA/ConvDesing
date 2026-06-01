@@ -79,9 +79,6 @@ export function BackgroundRemover() {
       <header className="mb-8 text-center md:text-left">
         <h1 className="text-3xl md:text-5xl font-bold mb-2 tracking-tight text-black dark:text-white flex items-center justify-center md:justify-start gap-3 flex-wrap">
           Eliminador de Fondo
-          <span className="px-2.5 py-1 text-xs font-bold bg-pink-500 text-white rounded-full uppercase tracking-wider">
-            IA + Pincel Libre
-          </span>
         </h1>
         <p className="text-zinc-400 text-lg max-w-2xl mx-auto md:mx-0">
           Usa la rueda del ratón para hacer zoom y perfecciona los detalles con
