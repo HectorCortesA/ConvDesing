@@ -80,7 +80,7 @@ export function BackgroundRemover() {
         <h1 className="text-3xl md:text-5xl font-bold mb-2 tracking-tight text-black dark:text-white flex items-center justify-center md:justify-start gap-3 flex-wrap">
           Eliminador de Fondo
         </h1>
-        <p className="text-zinc-400 text-lg max-w-2xl mx-auto md:mx-0">
+        <p className="dark:text-white text-black text-lg max-w-2xl mx-auto md:mx-0">
           Usa la rueda del ratón para hacer zoom y perfecciona los detalles con
           exactitud milimétrica.
         </p>
