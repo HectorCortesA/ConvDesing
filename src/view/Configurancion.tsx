@@ -50,7 +50,6 @@ export default function Configuracion() {
         </p>
         <div className="overflow-x-auto pb-4 scrollbar-hide">
           <div className="flex items-center mt-2 gap-4 min-w-max">
-            {/* Upload custom image */}
             <div
               onClick={openFileExplorer}
               className="w-90 h-40 rounded flex-shrink-0 backdrop-blur-lg bg-white/8  cursor-pointer hover:opacity-80 transition-opacity flex flex-col items-center justify-center"
@@ -80,8 +79,6 @@ export default function Configuracion() {
               onChange={handleFileUpload}
               className="hidden"
             />
-
-            {/* Preset background 1 */}
             <div
               onClick={() => handlePresetBackground(foto1)}
               className="w-90 h-40 rounded flex-shrink-0 bg-gray-300 dark:bg-gray-700 cursor-pointer overflow-hidden"
