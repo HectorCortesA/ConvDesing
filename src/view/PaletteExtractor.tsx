@@ -40,7 +40,6 @@ export function PaletteExtractor() {
       </header>
 
       <AnimatePresence mode="wait">
-        {/* ---- STEP: UPLOAD ---- */}
         {step === "upload" && (
           <motion.div
             key="upload"
@@ -85,7 +84,6 @@ export function PaletteExtractor() {
           </motion.div>
         )}
 
-        {/* ---- STEP: PROCESSING ---- */}
         {step === "processing" && (
           <motion.div
             key="processing"
@@ -110,7 +108,6 @@ export function PaletteExtractor() {
           </motion.div>
         )}
 
-        {/* ---- STEP: RESULT ---- */}
         {step === "result" && imageSrc && (
           <motion.div
             key="result"
@@ -213,7 +210,6 @@ export function PaletteExtractor() {
                   ))}
                 </div>
 
-                {/* Color manual */}
                 <div className="mt-8 pt-6 border-t border-black/80 dark:border-white/80">
                   <h3 className="text-lg font-bold text-black dark:text-white flex items-center gap-2 mb-4">
                     Color Específico
@@ -267,7 +263,6 @@ export function PaletteExtractor() {
               </div>
             </div>
 
-            {/* Banner de paleta combinada */}
             <div className="backdrop-blur-lg bg-white/8 rounded-3xl p-6 shadow-2xl">
               <h3 className="text-sm font-bold text-black dark:text-white mb-4 uppercase tracking-wider">
                 Vista Previa de la Paleta
