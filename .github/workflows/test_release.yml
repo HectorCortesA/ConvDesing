@@ -70,8 +70,8 @@ jobs:
       - name: Collect installer files
         run: |
           mkdir -p artifacts
-          cp release/0.0.0/*.AppImage artifacts/ 2>/dev/null || true
-          cp release/0.0.0/latest-linux.yml artifacts/ 2>/dev/null || true
+          cp release/*/*.AppImage artifacts/ 2>/dev/null || true
+          cp release/*/latest-linux.yml artifacts/ 2>/dev/null || true
           ls -la artifacts/
 
       - name: Upload Linux artifacts
@@ -109,9 +109,9 @@ jobs:
         shell: bash
         run: |
           mkdir -p artifacts
-          cp release/0.0.0/*-Setup.exe artifacts/ 2>/dev/null || true
-          cp release/0.0.0/*-Setup.exe.blockmap artifacts/ 2>/dev/null || true
-          cp release/0.0.0/latest.yml artifacts/ 2>/dev/null || true
+          cp release/*/*-Setup.exe artifacts/ 2>/dev/null || true
+          cp release/*/*-Setup.exe.blockmap artifacts/ 2>/dev/null || true
+          cp release/*/latest.yml artifacts/ 2>/dev/null || true
           ls -la artifacts/
 
       - name: Upload Windows artifacts
@@ -148,9 +148,9 @@ jobs:
       - name: Collect installer files
         run: |
           mkdir -p artifacts
-          cp release/0.0.0/*-Installer.dmg artifacts/ 2>/dev/null || true
-          cp release/0.0.0/*-Installer.dmg.blockmap artifacts/ 2>/dev/null || true
-          cp release/0.0.0/latest-mac.yml artifacts/ 2>/dev/null || true
+          cp release/*/*-Installer.dmg artifacts/ 2>/dev/null || true
+          cp release/*/*-Installer.dmg.blockmap artifacts/ 2>/dev/null || true
+          cp release/*/latest-mac.yml artifacts/ 2>/dev/null || true
           ls -la artifacts/
 
       - name: Upload macOS artifacts
@@ -194,16 +194,19 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: installers/*
+          files:
+            installers/*.exe
+            installers/*.dmg
+            installers/*.AppImage
           tag_name: v${{ github.run_number }}
           name: Release v${{ github.run_number }}
           body: |
             Automated release build from ConvDesing
 
             **Installers:**
-            - **Linux**: ${{ needs.build-linux.result == 'success' && '✅ AppImage' || '❌ Failed' }}
-            - **Windows**: ${{ needs.build-windows.result == 'success' && '✅ NSIS Installer (exe)' || '❌ Failed' }}
-            - **macOS**: ${{ needs.build-macos.result == 'success' && '✅ DMG Installer' || '❌ Failed' }}
+            - **Linux**: ${{ needs.build-linux.result == 'success' && 'AppImage' || '❌ Failed' }}
+            - **Windows**: ${{ needs.build-windows.result == 'success' && 'Installer' || '❌ Failed' }}
+            - **macOS**: ${{ needs.build-macos.result == 'success' && 'DMG Installer' || '❌ Failed' }}
           draft: false
           prerelease: false
         env:
