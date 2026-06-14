@@ -1,4 +1,3 @@
-import React from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   UploadCloud,
@@ -222,7 +221,6 @@ export default function Vectorizer() {
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col gap-6 relative"
           >
-            {/* OVERLAY DE CARGA PARA ACTUALIZACIONES RÁPIDAS (Para que la app no se sienta trabada) */}
             <AnimatePresence>
               {isProcessing && (
                 <motion.div
@@ -246,7 +244,6 @@ export default function Vectorizer() {
             </AnimatePresence>
 
             <div className="bg-zinc-900/80 border border-zinc-800 rounded-3xl p-6 shadow-2xl flex flex-col md:flex-row gap-6">
-              {/* Imagen Original */}
               <div className="w-full md:w-1/2 flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
@@ -270,7 +267,6 @@ export default function Vectorizer() {
                 </button>
               </div>
 
-              {/* Resultado Vectorizado */}
               <div className="w-full md:w-1/2 flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-purple-400 uppercase tracking-wider flex items-center gap-1.5">
