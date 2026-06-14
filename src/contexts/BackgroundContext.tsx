@@ -88,6 +88,7 @@ export function BackgroundProvider({ children }: BackgroundProviderProps) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useBackground() {
   const context = useContext(BackgroundContext);
   if (!context) {

@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-expect-error - ImageTracer has no TypeScript definitions
 import ImageTracer from "imagetracerjs";
 
 export type Step = "upload" | "processing" | "result";

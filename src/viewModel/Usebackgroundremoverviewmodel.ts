@@ -104,7 +104,7 @@ export function useBackgroundRemoverViewModel() {
     if (state.step === "editor" && state.imageSize) {
       drawVisualCanvas();
     }
-  }, [state.showMask, drawVisualCanvas]);
+  }, [state.showMask, state.imageSize, state.step, drawVisualCanvas]);
 
   const handleFileSelect = async (file: File) => {
     if (!file.type.startsWith("image/"))
@@ -328,7 +328,7 @@ export function useBackgroundRemoverViewModel() {
   const handleSliderMove = useCallback((clientX: number) => {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
-    let pos = ((clientX - rect.left) / rect.width) * 100;
+    const pos = ((clientX - rect.left) / rect.width) * 100;
     patch({ sliderPos: Math.max(0, Math.min(100, pos)) });
   }, []);
 

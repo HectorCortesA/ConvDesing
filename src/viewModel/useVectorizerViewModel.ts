@@ -55,6 +55,7 @@ export function useVectorizerViewModel() {
   }, [
     state.detailValue,
     state.activePreset,
+    state.step,
     runVectorization,
     state.originalImage,
   ]);
