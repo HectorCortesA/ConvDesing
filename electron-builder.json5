@@ -3,8 +3,6 @@
   $schema: "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
   appId: "convdesing",
   productName: "ConvDesing",
-  description: "A desktop application for image processing and conversion",
-  author: "ConvDesing Team",
   asar: true,
   directories: {
     output: "release/${version}",
