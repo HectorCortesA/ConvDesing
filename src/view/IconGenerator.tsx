@@ -18,7 +18,6 @@ import {
 
 import { PLATFORMS, SIZES, PRESET_COLORS } from "../model/Icongeneratormodel";
 import { useIconGenerator } from "../viewModel/useIconGenerator";
-
 export default function IconGenerator() {
   const {
     step,
@@ -112,11 +111,10 @@ export default function IconGenerator() {
                   <button
                     key={p.id}
                     onClick={() => handleOSChange(p.id)}
-                    className={`flex flex-col items-center justify-center p-3 rounded-2xl transition-all ${
-                      isActive
+                    className={`flex flex-col items-center justify-center p-3 rounded-2xl transition-all ${isActive
                         ? `backdrop-blur-lg bg-white/8 shadow-lg`
                         : `backdrop-blur-lg bg-white/8 ${getPlatformHover(p.id)}`
-                    }`}
+                      }`}
                   >
                     <Icon
                       size={24}
@@ -145,11 +143,10 @@ export default function IconGenerator() {
                   <button
                     key={size}
                     onClick={() => handleSizeChange(size)}
-                    className={`flex-1 min-w-[60px] py-2 px-1 text-xs font-bold rounded-lg transition-all ${
-                      targetSize === size
+                    className={`flex-1 min-w-[60px] py-2 px-1 text-xs font-bold rounded-lg transition-all ${targetSize === size
                         ? "backdrop-blur-lg bg-white/8 text-white shadow-md"
                         : "text-zinc-500 hover:text-zinc-300"
-                    }`}
+                      }`}
                   >
                     {size} x {size}
                   </button>
@@ -168,11 +165,10 @@ export default function IconGenerator() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className={`relative w-full h-[400px] rounded-3xl border-2 border-dashed flex flex-col items-center justify-center transition-all cursor-pointer group ${
-              isDragging
+            className={`relative w-full h-[400px] rounded-3xl border-2 border-dashed flex flex-col items-center justify-center transition-all cursor-pointer group ${isDragging
                 ? "border-indigo-500 backdrop-blur-lg bg-white/8"
                 : "border-zinc-700 hover:border-zinc-500 backdrop-blur-lg bg-white/8 hover:bg-zinc-600/50"
-            }`}
+              }`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
