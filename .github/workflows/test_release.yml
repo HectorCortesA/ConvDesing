@@ -71,7 +71,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: linux-installer
-          path: release/
+          path: |
+            release/**/*.AppImage
+            release/**/*.yml
+            !release/**/builder-debug.yml
 
   build-windows:
     runs-on: windows-latest
@@ -102,7 +105,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: windows-installer
-          path: release/
+          path: |
+            release/**/*.exe
+            release/**/*.blockmap
+            release/**/*.yml
+            !release/**/builder-debug.yml
 
   build-macos:
     runs-on: macos-latest
@@ -133,7 +140,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: macos-installer
-          path: release/
+          path: |
+            release/**/*.dmg
+            release/**/*.blockmap
+            release/**/*.yml
+            !release/**/builder-debug.yml
 
   create-release:
     runs-on: ubuntu-latest
@@ -148,29 +159,36 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: linux-installer
-          path: installers/linux
+          path: installers/
 
       - name: Download Windows artifacts
         if: needs.build-windows.result == 'success'
         uses: actions/download-artifact@v4
         with:
           name: windows-installer
-          path: installers/windows
+          path: installers/
 
       - name: Download macOS artifacts
         if: needs.build-macos.result == 'success'
         uses: actions/download-artifact@v4
         with:
           name: macos-installer
-          path: installers/macos
+          path: installers/
+
+      - name: List installer files
+        run: find installers/ -type f | sort
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            installers/**/*
+            installers/**/*.AppImage
+            installers/**/*.dmg
+            installers/**/*.exe
+            installers/**/*.blockmap
+            installers/**/*.yml
           tag_name: v${{ github.run_number }}
-          release_name: Release v${{ github.run_number }}
+          name: Release v${{ github.run_number }}
           body: |
             Automated release build from ConvDesing
 
