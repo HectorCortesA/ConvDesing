@@ -67,14 +67,18 @@ jobs:
           retry_wait_seconds: 10
           command: pnpm run build
 
+      - name: Collect installer files
+        run: |
+          mkdir -p artifacts
+          cp release/0.0.0/*.AppImage artifacts/ 2>/dev/null || true
+          cp release/0.0.0/latest-linux.yml artifacts/ 2>/dev/null || true
+          ls -la artifacts/
+
       - name: Upload Linux artifacts
         uses: actions/upload-artifact@v4
         with:
           name: linux-installer
-          path: |
-            release/**/*.AppImage
-            release/**/*.yml
-            !release/**/builder-debug.yml
+          path: artifacts/
 
   build-windows:
     runs-on: windows-latest
@@ -101,15 +105,20 @@ jobs:
       - name: Build Windows
         run: pnpm run build
 
+      - name: Collect installer files
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          cp release/0.0.0/*-Setup.exe artifacts/ 2>/dev/null || true
+          cp release/0.0.0/*-Setup.exe.blockmap artifacts/ 2>/dev/null || true
+          cp release/0.0.0/latest.yml artifacts/ 2>/dev/null || true
+          ls -la artifacts/
+
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
         with:
           name: windows-installer
-          path: |
-            release/**/*.exe
-            release/**/*.blockmap
-            release/**/*.yml
-            !release/**/builder-debug.yml
+          path: artifacts/
 
   build-macos:
     runs-on: macos-latest
@@ -136,15 +145,19 @@ jobs:
       - name: Build macOS
         run: pnpm run build
 
+      - name: Collect installer files
+        run: |
+          mkdir -p artifacts
+          cp release/0.0.0/*-Installer.dmg artifacts/ 2>/dev/null || true
+          cp release/0.0.0/*-Installer.dmg.blockmap artifacts/ 2>/dev/null || true
+          cp release/0.0.0/latest-mac.yml artifacts/ 2>/dev/null || true
+          ls -la artifacts/
+
       - name: Upload macOS artifacts
         uses: actions/upload-artifact@v4
         with:
           name: macos-installer
-          path: |
-            release/**/*.dmg
-            release/**/*.blockmap
-            release/**/*.yml
-            !release/**/builder-debug.yml
+          path: artifacts/
 
   create-release:
     runs-on: ubuntu-latest
@@ -181,12 +194,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            installers/**/*.AppImage
-            installers/**/*.dmg
-            installers/**/*.exe
-            installers/**/*.blockmap
-            installers/**/*.yml
+          files: installers/*
           tag_name: v${{ github.run_number }}
           name: Release v${{ github.run_number }}
           body: |
