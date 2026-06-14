@@ -167,6 +167,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Get version from package.json
+        id: get_version
+        run: echo "VERSION=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+
       - name: Download Linux artifacts
         if: needs.build-linux.result == 'success'
         uses: actions/download-artifact@v4
@@ -194,12 +198,12 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files:
+          files: |
             installers/*.exe
             installers/*.dmg
             installers/*.AppImage
-          tag_name: v${{ github.run_number }}
-          name: Release v${{ github.run_number }}
+          tag_name: v${{ steps.get_version.outputs.VERSION }}
+          name: Release v${{ steps.get_version.outputs.VERSION }}
           body: |
             Automated release build from ConvDesing
 
