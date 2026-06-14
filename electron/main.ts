@@ -1,10 +1,11 @@
 import { app, BrowserWindow } from "electron";
-import { createRequire } from "node:module";
+//import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
-// @ts-expect-error - require is used at runtime in ES modules
-const require = createRequire(import.meta.url);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+//
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // The built directory structure
