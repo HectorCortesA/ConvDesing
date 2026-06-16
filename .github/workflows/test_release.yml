@@ -120,49 +120,10 @@ jobs:
           name: windows-installer
           path: artifacts/
 
-  build-macos:
-    runs-on: macos-latest
-    needs: test
-    if: github.ref == 'refs/heads/release' && github.event_name == 'push'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Build macOS
-        run: pnpm run build
-
-      - name: Collect installer files
-        run: |
-          mkdir -p artifacts
-          cp release/*/*-Installer.dmg artifacts/ 2>/dev/null || true
-          cp release/*/*-Installer.dmg.blockmap artifacts/ 2>/dev/null || true
-          cp release/*/latest-mac.yml artifacts/ 2>/dev/null || true
-          ls -la artifacts/
-
-      - name: Upload macOS artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: macos-installer
-          path: artifacts/
-
   create-release:
     runs-on: ubuntu-latest
-    needs: [build-linux, build-windows, build-macos]
-    if: always() && github.ref == 'refs/heads/release' && github.event_name == 'push' && !contains(needs.*.result, 'cancelled') && (needs.build-linux.result == 'success' || needs.build-windows.result == 'success' || needs.build-macos.result == 'success')
+    needs: [build-linux, build-windows]
+    if: always() && github.ref == 'refs/heads/release' && github.event_name == 'push' && !contains(needs.*.result, 'cancelled') && (needs.build-linux.result == 'success' || needs.build-windows.result == 'success')
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -185,13 +146,6 @@ jobs:
           name: windows-installer
           path: installers/
 
-      - name: Download macOS artifacts
-        if: needs.build-macos.result == 'success'
-        uses: actions/download-artifact@v4
-        with:
-          name: macos-installer
-          path: installers/
-
       - name: List installer files
         run: find installers/ -type f | sort
 
@@ -200,7 +154,6 @@ jobs:
         with:
           files: |
             installers/*.exe
-            installers/*.dmg
             installers/*.AppImage
           tag_name: v${{ steps.get_version.outputs.VERSION }}
           name: Release v${{ steps.get_version.outputs.VERSION }}
@@ -210,7 +163,6 @@ jobs:
             **Installers:**
             - **Linux**: ${{ needs.build-linux.result == 'success' && 'AppImage' || '❌ Failed' }}
             - **Windows**: ${{ needs.build-windows.result == 'success' && 'Installer' || '❌ Failed' }}
-            - **macOS**: ${{ needs.build-macos.result == 'success' && 'DMG Installer' || '❌ Failed' }}
           draft: false
           prerelease: false
         env:
