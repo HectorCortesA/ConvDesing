@@ -5,6 +5,9 @@ import {
   BackgroundProvider,
   useBackground,
 } from "./contexts/BackgroundContext";
+import { GooeyToaster } from "goey-toast";
+import "goey-toast/styles.css";
+import Updater from "./components/Updater/Updater";
 import "./App.css";
 import title from "./assets/title.svg";
 
@@ -21,6 +24,8 @@ function AppContent() {
         padding: 0,
       }}
     >
+      <GooeyToaster position="top-right" closeButton="top-right" />
+      <Updater />
       <img
         src={backgroundImage}
         alt="Fondo"

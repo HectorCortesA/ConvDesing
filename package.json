@@ -23,6 +23,7 @@
     "@xenova/transformers": "^2.7.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "goey-toast": "^0.5.0",
     "imagetracerjs": "^1.2.6",
     "jszip": "^3.10.1",
     "lucide-react": "^1.8.0",
