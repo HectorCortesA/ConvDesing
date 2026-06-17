@@ -7,7 +7,7 @@ import {
   getCurrentVersion,
   type ReleaseInfo,
   type ReleaseAsset,
-} from "../components/Updater/Updater";
+} from "../components/Updater/updaterService";
 import { gooeyToast } from "goey-toast";
 
 export default function Configuracion() {
