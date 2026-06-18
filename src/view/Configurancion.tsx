@@ -10,6 +10,31 @@ import {
 } from "../components/Updater/updaterService";
 import { gooeyToast } from "goey-toast";
 
+const getRelevantAssets = (assets: ReleaseAsset[]) => {
+  const userAgent = window.navigator.userAgent.toLowerCase();
+  const isWindows = userAgent.includes("win");
+  const isMac = userAgent.includes("mac");
+  const isLinux = userAgent.includes("linux") || userAgent.includes("x11");
+
+  const filtered = assets.filter((asset) => {
+    const name = asset.name.toLowerCase();
+    if (isWindows) return name.endsWith(".exe");
+    if (isMac)
+      return (
+        name.endsWith(".dmg") || name.endsWith(".pkg") || name.endsWith(".zip")
+      );
+    if (isLinux)
+      return (
+        name.endsWith(".appimage") ||
+        name.endsWith(".deb") ||
+        name.endsWith(".rpm")
+      );
+    return true;
+  });
+
+  return filtered.length > 0 ? filtered : assets;
+};
+
 export default function Configuracion() {
   const {
     backgroundImage,
@@ -66,6 +91,13 @@ export default function Configuracion() {
       const release = await checkForUpdate();
       if (release) {
         setUpdateInfo(release);
+
+        // Auto-seleccionar si solo hay un archivo para este sistema
+        const relevantAssets = getRelevantAssets(release.assets);
+        if (relevantAssets.length === 1) {
+          setSelectedAsset(relevantAssets[0]);
+        }
+
         gooeyToast.info("Actualización encontrada", {
           description: `Versión ${release.version} disponible`,
           preset: "smooth",
@@ -405,9 +437,9 @@ export default function Configuracion() {
             {updateInfo.assets.length > 0 ? (
               <div className="space-y-2">
                 <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
-                  Archivos disponibles — selecciona uno para descargar
+                  Archivos disponibles para tu sistema
                 </p>
-                {updateInfo.assets.map((asset, idx) => (
+                {getRelevantAssets(updateInfo.assets).map((asset, idx) => (
                   <div
                     key={idx}
                     onClick={() => handleSelectAsset(asset)}
