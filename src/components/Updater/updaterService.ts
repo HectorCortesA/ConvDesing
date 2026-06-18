@@ -2,7 +2,7 @@
 const GITHUB_OWNER = "HectorCortesA";
 const GITHUB_REPO = "ConvDesing";
 export const CHECK_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes
-const CURRENT_VERSION = "0.1.0"; // Must match package.json version
+const CURRENT_VERSION = "0.1.1"; // Must match package.json version
 
 // ── Types ──────────────────────────────────────────────────────
 export interface ReleaseInfo {
@@ -23,8 +23,7 @@ export interface ReleaseAsset {
 
 // ── Version comparison utility ─────────────────────────────────
 function compareVersions(current: string, latest: string): number {
-  const normalize = (v: string) =>
-    v.replace(/^v/, "").split(".").map(Number);
+  const normalize = (v: string) => v.replace(/^v/, "").split(".").map(Number);
   const c = normalize(current);
   const l = normalize(latest);
   const len = Math.max(c.length, l.length);
@@ -47,7 +46,7 @@ export async function fetchLatestRelease(): Promise<ReleaseInfo | null> {
         headers: {
           Accept: "application/vnd.github.v3+json",
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -75,7 +74,7 @@ export async function fetchLatestRelease(): Promise<ReleaseInfo | null> {
           downloadUrl: asset.browser_download_url,
           size: asset.size,
           contentType: asset.content_type,
-        })
+        }),
       ),
     };
   } catch (error) {
