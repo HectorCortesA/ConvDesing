@@ -1,8 +1,10 @@
+import packageJson from "../../../package.json";
+
 // ── Configuration ──────────────────────────────────────────────
 const GITHUB_OWNER = "HectorCortesA";
 const GITHUB_REPO = "ConvDesing";
 export const CHECK_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes
-const CURRENT_VERSION = "0.1.1"; // Must match package.json version
+const CURRENT_VERSION = packageJson.version; // Read directly from package.json
 
 // ── Types ──────────────────────────────────────────────────────
 export interface ReleaseInfo {

@@ -53,10 +53,24 @@ export default function Configuracion() {
   const [selectedAsset, setSelectedAsset] = useState<ReleaseAsset | null>(null);
   const [showInstallDialog, setShowInstallDialog] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState(0);
 
   useEffect(() => {
     setPreviewImage(backgroundImage);
   }, [backgroundImage]);
+
+  // Listen for download progress from Electron main process
+  useEffect(() => {
+    if (window.ipcRenderer) {
+      const handler = (_event: unknown, progress: number) => {
+        setDownloadProgress(progress);
+      };
+      window.ipcRenderer.on('download-progress', handler);
+      return () => {
+        window.ipcRenderer.off('download-progress', handler);
+      };
+    }
+  }, []);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -138,6 +152,7 @@ export default function Configuracion() {
     if (!selectedAsset) return;
     setShowInstallDialog(false);
     setIsDownloading(true);
+    setDownloadProgress(0);
 
     gooeyToast.info("Descargando actualización", {
       description: `Descargando ${selectedAsset.name}...`,
@@ -145,18 +160,59 @@ export default function Configuracion() {
       duration: 5000,
     });
 
-    // Open the download URL — in Electron this will trigger the system download
-    window.open(selectedAsset.downloadUrl, "_blank");
+    // Check if running in Electron
+    if (window.ipcRenderer) {
+      try {
+        // Download via Electron main process (saves to disk with progress)
+        const filePath: string = await window.ipcRenderer.invoke(
+          'download-update',
+          selectedAsset.downloadUrl,
+          selectedAsset.name
+        );
 
-    setTimeout(() => {
-      setIsDownloading(false);
-      gooeyToast.success("Descarga iniciada", {
-        description:
-          "La actualización se instalará automáticamente al cerrar la aplicación",
-        preset: "smooth",
-        duration: 8000,
-      });
-    }, 2000);
+        setDownloadProgress(100);
+
+        gooeyToast.success("Descarga completada", {
+          description: "Instalando actualización...",
+          preset: "smooth",
+          duration: 3000,
+        });
+
+        // Execute the installer
+        const result = await window.ipcRenderer.invoke('install-update', filePath) as { success: boolean; error?: string };
+
+        if (result.success) {
+          gooeyToast.success("Instalando", {
+            description: "La aplicación se cerrará para completar la instalación.",
+            preset: "smooth",
+            duration: 5000,
+          });
+        } else {
+          throw new Error(result.error || 'Error al instalar');
+        }
+      } catch (error) {
+        console.error('[Updater] Download/install error:', error);
+        gooeyToast.error("Error en la actualización", {
+          description: "No se pudo descargar o instalar la actualización. Intenta de nuevo.",
+          preset: "smooth",
+          duration: 8000,
+        });
+      } finally {
+        setIsDownloading(false);
+        setDownloadProgress(0);
+      }
+    } else {
+      // Fallback for non-Electron environments (web browser)
+      window.open(selectedAsset.downloadUrl, "_blank");
+      setTimeout(() => {
+        setIsDownloading(false);
+        gooeyToast.success("Descarga iniciada", {
+          description: "El archivo se descargó en tu navegador. Ejecútalo manualmente para instalar.",
+          preset: "smooth",
+          duration: 8000,
+        });
+      }, 2000);
+    }
   };
 
   const formatFileSize = (bytes: number): string => {
@@ -492,8 +548,16 @@ export default function Configuracion() {
                   id="btn-download-update"
                   onClick={handleDownloadClick}
                   disabled={!selectedAsset || isDownloading}
-                  className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 disabled:bg-green-600/30 disabled:text-white/40 text-white text-sm font-medium transition-all duration-200 disabled:cursor-not-allowed"
+                  className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 disabled:bg-green-600/30 disabled:text-white/40 text-white text-sm font-medium transition-all duration-200 disabled:cursor-not-allowed relative overflow-hidden"
                 >
+                  {/* Progress bar background */}
+                  {isDownloading && downloadProgress > 0 && (
+                    <div
+                      className="absolute inset-0 bg-green-500/30 transition-all duration-300"
+                      style={{ width: `${downloadProgress}%` }}
+                    />
+                  )}
+                  <span className="relative z-10 flex items-center gap-2">
                   {isDownloading ? (
                     <>
                       <svg
@@ -515,7 +579,7 @@ export default function Configuracion() {
                           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
                         />
                       </svg>
-                      Descargando...
+                      Descargando... {downloadProgress > 0 ? `${downloadProgress}%` : ''}
                     </>
                   ) : (
                     <>
@@ -532,9 +596,10 @@ export default function Configuracion() {
                           d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
                         />
                       </svg>
-                      Descargar actualización
+                      Descargar e instalar
                     </>
                   )}
+                  </span>
                 </button>
               </div>
             ) : (
