@@ -95,7 +95,7 @@ export async function convertImageBlob(
 
   if (targetFormat === "image/svg+xml") {
     const pngDataUrl = canvas.toDataURL("image/png");
-    const svgString = `<svg xmlns="http://www.w3.org/2000/svg" width="${img.width}" height="${img.height}"><image href="${pngDataUrl}" width="${img.width}" height="${img.height}" /></svg>`;
+    const svgString = `<svg xmlns="http://www.w3.org/2000/svg" width="${img.width}" height="${img.height}" viewBox="0 0 ${img.width} ${img.height}"><image href="${pngDataUrl}" width="${img.width}" height="${img.height}" /></svg>`;
     dataUrl = `data:image/svg+xml;base64,${btoa(svgString)}`;
     decodedSize = svgString.length;
   } else {

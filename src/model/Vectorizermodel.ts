@@ -109,10 +109,12 @@ const getOptions = (presetId: Preset, v: number) => {
 async function getOptimizedImageData(
   imageUrl: string,
   maxSize = 600,
-): Promise<ImageData> {
+): Promise<{ imgData: ImageData; origW: number; origH: number }> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
+      const origW = img.width;
+      const origH = img.height;
       let { width, height } = img;
       if (width > maxSize || height > maxSize) {
         const ratio = Math.min(maxSize / width, maxSize / height);
@@ -132,7 +134,7 @@ async function getOptimizedImageData(
       ctx.drawImage(img, 0, 0, width, height);
 
       // Retornamos la matriz de píxeles directa
-      resolve(ctx.getImageData(0, 0, width, height));
+      resolve({ imgData: ctx.getImageData(0, 0, width, height), origW, origH });
     };
     img.onerror = () => reject(new Error("Error al cargar la imagen."));
     img.src = imageUrl;
@@ -144,7 +146,7 @@ export async function vectorizeImageProcess(
   preset: Preset,
   detail: number,
 ): Promise<string> {
-  const imgData = await getOptimizedImageData(url);
+  const { imgData, origW, origH } = await getOptimizedImageData(url);
   const options = getOptions(preset, detail);
 
   return new Promise((resolve, reject) => {
@@ -170,8 +172,8 @@ export async function vectorizeImageProcess(
           );
         }
 
-        finalSvg = finalSvg.replace(/width="[^"]+"/, 'width="100%"');
-        finalSvg = finalSvg.replace(/height="[^"]+"/, 'height="100%"');
+        finalSvg = finalSvg.replace(/width="[^"]+"/, `width="${origW}"`);
+        finalSvg = finalSvg.replace(/height="[^"]+"/, `height="${origH}"`);
 
         resolve(finalSvg);
       } catch (err) {
