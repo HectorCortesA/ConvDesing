@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import foto1 from "../assets/fondo.jpg";
 import { useBackground } from "../contexts/BackgroundContext";
 import {
   checkForUpdate,
@@ -275,16 +274,6 @@ export default function Configuracion() {
               onChange={handleFileUpload}
               className="hidden"
             />
-            <div
-              onClick={() => handlePresetBackground(foto1)}
-              className="w-90 h-40 rounded flex-shrink-0 bg-gray-300 dark:bg-gray-700 cursor-pointer overflow-hidden"
-            >
-              <img
-                src={foto1}
-                alt="Tema 1"
-                className="w-full h-full rounded object-cover hover:scale-110 transition-transform duration-300"
-              />
-            </div>
 
             {/* Show current selected background */}
             <div className="w-90 h-40 rounded flex-shrink-0 bg-gray-300 dark:bg-gray-700 overflow-hidden relative">
@@ -309,11 +298,10 @@ export default function Configuracion() {
               <div key={index} className="relative flex-shrink-0 group">
                 <div
                   onClick={() => setBackgroundImage(image)}
-                  className={`w-90 h-40  rounded cursor-pointer overflow-hidden transition-all duration-300 ${
-                    backgroundImage === image
-                      ? "ring-4 ring-blue-500 shadow-lg"
-                      : "hover:shadow-lg hover:scale-105"
-                  }`}
+                  className={`w-90 h-40  rounded cursor-pointer overflow-hidden transition-all duration-300 ${backgroundImage === image
+                    ? "ring-4 ring-blue-500 shadow-lg"
+                    : "hover:shadow-lg hover:scale-105"
+                    }`}
                 >
                   <img
                     src={image}
@@ -499,20 +487,18 @@ export default function Configuracion() {
                   <div
                     key={idx}
                     onClick={() => handleSelectAsset(asset)}
-                    className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 ${
-                      selectedAsset?.name === asset.name
-                        ? "bg-blue-500/20 border border-blue-500/50 ring-1 ring-blue-400/30"
-                        : "bg-white/5 border border-transparent hover:bg-white/10 hover:border-white/10"
-                    }`}
+                    className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 ${selectedAsset?.name === asset.name
+                      ? "bg-blue-500/20 border border-blue-500/50 ring-1 ring-blue-400/30"
+                      : "bg-white/5 border border-transparent hover:bg-white/10 hover:border-white/10"
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       {/* Selection indicator */}
                       <div
-                        className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
-                          selectedAsset?.name === asset.name
-                            ? "border-blue-500 bg-blue-500"
-                            : "border-gray-500"
-                        }`}
+                        className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${selectedAsset?.name === asset.name
+                          ? "border-blue-500 bg-blue-500"
+                          : "border-gray-500"
+                          }`}
                       >
                         {selectedAsset?.name === asset.name && (
                           <div className="w-1.5 h-1.5 rounded-full bg-white" />
@@ -558,47 +544,47 @@ export default function Configuracion() {
                     />
                   )}
                   <span className="relative z-10 flex items-center gap-2">
-                  {isDownloading ? (
-                    <>
-                      <svg
-                        className="w-4 h-4 animate-spin"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
+                    {isDownloading ? (
+                      <>
+                        <svg
+                          className="w-4 h-4 animate-spin"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                          />
+                        </svg>
+                        Descargando... {downloadProgress > 0 ? `${downloadProgress}%` : ''}
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
                           stroke="currentColor"
-                          strokeWidth="4"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                        />
-                      </svg>
-                      Descargando... {downloadProgress > 0 ? `${downloadProgress}%` : ''}
-                    </>
-                  ) : (
-                    <>
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                        />
-                      </svg>
-                      Descargar e instalar
-                    </>
-                  )}
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                          />
+                        </svg>
+                        Descargar e instalar
+                      </>
+                    )}
                   </span>
                 </button>
               </div>
