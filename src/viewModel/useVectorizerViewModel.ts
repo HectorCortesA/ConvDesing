@@ -118,6 +118,59 @@ export function useVectorizerViewModel() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const toggleEditMode = () => patch({ isEditing: !state.isEditing });
+  const setEditMode = (mode: "color" | "erase" | null) => patch({ editMode: mode });
+  const setSelectedColor = (color: string) => patch({ selectedColor: color });
+  const updateSvgResult = (newSvg: string) => patch({ svgResult: newSvg });
+
+  const removeBackground = (container?: HTMLElement) => {
+    if (!state.svgResult) return;
+    try {
+      if (container) {
+        const svgElement = container.querySelector('svg');
+        if (svgElement) {
+          const paths = Array.from(svgElement.querySelectorAll('path, rect')) as SVGGraphicsElement[];
+          if (paths.length > 0) {
+            const viewBox = svgElement.viewBox.baseVal;
+            const totalArea = viewBox.width * viewBox.height;
+            let removedAny = false;
+            
+            paths.forEach(p => {
+              try {
+                const bbox = p.getBBox();
+                const pathArea = bbox.width * bbox.height;
+                // Si el trazo ocupa más del 65% del área total, se considera fondo y se elimina
+                if (pathArea > totalArea * 0.65) {
+                  p.remove();
+                  removedAny = true;
+                }
+              } catch (err) {
+                // Ignore getBBox errors for invisible elements
+              }
+            });
+
+            if (!removedAny) {
+              paths[0]?.remove(); // Fallback
+            }
+            patch({ svgResult: svgElement.outerHTML });
+            return;
+          }
+        }
+      }
+
+      // Fallback estático
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(state.svgResult, "image/svg+xml");
+      const firstPath = doc.querySelector('path');
+      if (firstPath) {
+        firstPath.remove();
+        patch({ svgResult: new XMLSerializer().serializeToString(doc) });
+      }
+    } catch (e) {
+      console.error("Error removing background", e);
+    }
+  };
+
   return {
     state,
     fileInputRef,
@@ -138,5 +191,10 @@ export function useVectorizerViewModel() {
     downloadSvg,
     copySvgCode,
     reset,
+    toggleEditMode,
+    setEditMode,
+    setSelectedColor,
+    updateSvgResult,
+    removeBackground,
   };
 }

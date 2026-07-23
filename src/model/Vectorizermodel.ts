@@ -33,6 +33,9 @@ export interface VectorizerState {
   isProcessing: boolean;
   isCopied: boolean;
   errorMessage: string | null;
+  isEditing: boolean;
+  editMode: "color" | "erase" | null;
+  selectedColor: string;
 }
 
 export const initialState: VectorizerState = {
@@ -46,6 +49,9 @@ export const initialState: VectorizerState = {
   isProcessing: false,
   isCopied: false,
   errorMessage: null,
+  isEditing: false,
+  editMode: null,
+  selectedColor: "#a855f7", // default purple
 };
 
 const generateGrayPalette = (count: number) => {
@@ -59,25 +65,32 @@ const generateGrayPalette = (count: number) => {
 
 const getOptions = (presetId: Preset, v: number) => {
   const t = v / 100;
-  const omit = Math.round(15 - 15 * t);
-  const threshold = 2.5 - 2.4 * t;
-  const baseBlur = Math.round(2 - 2 * t);
+  // Disminuir pathomit para preservar más detalles en altas calidades
+  const omit = Math.round(8 - 8 * t);
+  // Reducir los umbrales (thresholds) hace que las curvas sean más ajustadas y detalladas
+  const ltres = 1.0 - 0.9 * t;
+  const qtres = 1.0 - 0.9 * t;
+  
+  // Menos desenfoque preserva bordes más nítidos
+  const baseBlur = Math.round(1 - 1 * t);
 
   let colorCount = 16;
   if (presetId === "fullcolor") {
-    colorCount = Math.floor(8 + t * 40);
+    colorCount = Math.floor(16 + t * 48); // Hasta 64 colores para alta fidelidad
   } else if (presetId === "grayscale") {
-    colorCount = Math.floor(4 + t * 20);
+    colorCount = Math.floor(8 + t * 24); // Más tonos de gris
   } else {
     colorCount = 2;
   }
 
   const baseOpts = {
-    ltres: threshold,
-    qtres: threshold,
+    ltres: ltres,
+    qtres: qtres,
     pathomit: omit,
-    scale: 1,
+    scale: 1, // La escala 1 está bien porque ya estamos pasando una imagen de alta resolución (2048px)
     blurradius: presetId === "bw" ? baseBlur + 1 : baseBlur,
+    rightangleenhance: true, // Mejora las esquinas y bordes rectos
+    mincolorratio: 0, // Preserva parches de color muy pequeños
   };
 
   switch (presetId) {
@@ -108,7 +121,7 @@ const getOptions = (presetId: Preset, v: number) => {
 // Evitamos Base64 para que la librería no colapse la memoria
 async function getOptimizedImageData(
   imageUrl: string,
-  maxSize = 600,
+  maxSize = 2048,
 ): Promise<{ imgData: ImageData; origW: number; origH: number }> {
   return new Promise((resolve, reject) => {
     const img = new Image();

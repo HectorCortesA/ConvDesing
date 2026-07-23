@@ -1,3 +1,4 @@
+import React, { useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   UploadCloud,
@@ -11,11 +12,18 @@ import {
   Check,
   Loader2,
   AlertTriangle,
+  Edit3,
+  Palette,
+  Eraser,
+  Scissors,
+  X,
+  Pipette,
 } from "lucide-react";
 import { useVectorizerViewModel } from "../viewModel/useVectorizerViewModel";
 import { PRESETS } from "../model/Vectorizermodel";
 
 export default function Vectorizer() {
+  const modalSvgContainerRef = useRef<HTMLDivElement>(null);
   const vm = useVectorizerViewModel();
   const {
     state,
@@ -30,6 +38,11 @@ export default function Vectorizer() {
     downloadSvg,
     copySvgCode,
     reset,
+    toggleEditMode,
+    setEditMode,
+    setSelectedColor,
+    updateSvgResult,
+    removeBackground,
   } = vm;
 
   const {
@@ -42,7 +55,27 @@ export default function Vectorizer() {
     isProcessing,
     isCopied,
     errorMessage,
+    isEditing,
+    editMode,
+    selectedColor,
   } = state;
+
+  const handleSvgClick = (e: React.MouseEvent) => {
+    if (!isEditing || !editMode) return;
+    const target = e.target as SVGElement;
+
+    if (target.tagName !== "path" && target.tagName !== "rect") return;
+
+    if (editMode === "color") {
+      target.setAttribute("fill", selectedColor);
+    } else if (editMode === "erase") {
+      target.remove();
+    }
+
+    // Sync the updated innerHTML back to state
+    const svgContainer = e.currentTarget as HTMLElement;
+    updateSvgResult(svgContainer.innerHTML);
+  };
 
   return (
     <div className="w-full max-w-6xl mx-auto p-4 md:p-8">
@@ -78,11 +111,10 @@ export default function Vectorizer() {
                 key={p.id}
                 onClick={() => setActivePreset(p.id)}
                 disabled={step === "processing" || isProcessing}
-                className={`flex flex-col p-3 rounded-2xl border text-left transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
-                  activePreset === p.id
-                    ? "bg-purple-500/20 border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.2)]"
-                    : "bg-zinc-950 border-zinc-800 hover:border-purple-500/30 hover:bg-zinc-900"
-                }`}
+                className={`flex flex-col p-3 rounded-2xl border text-left transition-all disabled:opacity-50 disabled:cursor-not-allowed ${activePreset === p.id
+                  ? "bg-purple-500/20 border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.2)]"
+                  : "bg-zinc-950 border-zinc-800 hover:border-purple-500/30 hover:bg-zinc-900"
+                  }`}
               >
                 <span
                   className={`text-sm font-bold mb-1 ${activePreset === p.id ? "text-purple-300" : "text-zinc-200"}`}
@@ -152,11 +184,10 @@ export default function Vectorizer() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className={`relative w-full h-[400px] rounded-3xl border-2 border-dashed flex flex-col items-center justify-center transition-all cursor-pointer group overflow-hidden ${
-              isDragging
-                ? "border-purple-500 bg-purple-500/10"
-                : "border-zinc-700 hover:border-zinc-500 bg-zinc-900/30 hover:bg-zinc-900/50"
-            }`}
+            className={`relative w-full h-[400px] rounded-3xl border-2 border-dashed flex flex-col items-center justify-center transition-all cursor-pointer group overflow-hidden ${isDragging
+              ? "border-purple-500 bg-purple-500/10"
+              : "border-zinc-700 hover:border-zinc-500 bg-zinc-900/30 hover:bg-zinc-900/50"
+              }`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
@@ -270,13 +301,20 @@ export default function Vectorizer() {
               <div className="w-full md:w-1/2 flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-purple-400 uppercase tracking-wider flex items-center gap-1.5">
-                    <Target size={14} /> Resultado SVG
+                    Resultado SVG
                   </span>
+                  <button
+                    onClick={toggleEditMode}
+                    className="text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-colors bg-purple-500 text-white shadow-[0_0_15px_rgba(168,85,247,0.4)] hover:bg-purple-600"
+                  >
+                    Editar Diseño
+                  </button>
                 </div>
+
                 <div className="h-[300px] md:h-[400px] rounded-2xl overflow-hidden bg-zinc-950 border border-purple-500/30 flex items-center justify-center relative shadow-[0_0_30px_rgba(168,85,247,0.05)]">
                   <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0ibm9uZSI+PC9yZWN0Pgo8cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9IiMzMzMiPjwvcmVjdD4KPHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9IiMzMzMiPjwvcmVjdD4KPC9zdmc+')] opacity-20" />
                   <div
-                    className="relative z-10 w-full h-full flex items-center justify-center p-4 [&>svg]:w-full [&>svg]:h-full [&>svg]:max-h-full [&>svg]:object-contain"
+                    className="relative z-10 w-full h-full flex items-center justify-center p-4 [&>svg]:w-full [&>svg]:h-full [&>svg]:max-h-full [&>svg]:object-contain pointer-events-none"
                     dangerouslySetInnerHTML={{ __html: svgResult }}
                   />
                 </div>
@@ -299,6 +337,127 @@ export default function Vectorizer() {
                   </button>
                 </div>
               </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isEditing && svgResult && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-zinc-950/90 backdrop-blur-xl flex flex-col"
+          >
+            <div className="flex items-center justify-between p-4 md:p-6 border-b border-zinc-800 bg-zinc-950/50">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <Edit3 size={20} className="text-purple-400" /> Modo de Edición Avanzada
+              </h2>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={toggleEditMode}
+                  className="px-6 py-2 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-full transition-all shadow-[0_0_20px_rgba(168,85,247,0.4)] flex items-center gap-2"
+                >
+                  Finalizar Edición
+                </button>
+                <button
+                  onClick={toggleEditMode}
+                  className="w-10 h-10 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-full transition-colors"
+                  title="Cerrar sin cambios"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1 flex flex-col relative overflow-hidden">
+              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0ibm9uZSI+PC9yZWN0Pgo8cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9IiMzMzMiPjwvcmVjdD4KPHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9IiMzMzMiPjwvcmVjdD4KPC9zdmc+')] opacity-10 pointer-events-none" />
+
+              <div
+                ref={modalSvgContainerRef}
+                className="relative z-10 w-full h-full flex items-center justify-center p-8 [&>svg]:w-full [&>svg]:h-full [&>svg]:max-h-full [&>svg]:object-contain [&>svg>path]:cursor-pointer [&>svg>path:hover]:opacity-60 [&>svg>rect]:cursor-pointer [&>svg>rect:hover]:opacity-60"
+                dangerouslySetInnerHTML={{ __html: svgResult }}
+                onClick={handleSvgClick}
+              />
+            </div>
+
+            <div className="p-4 md:p-6 border-t border-zinc-800 bg-zinc-950/80 flex flex-col md:flex-row items-center justify-center gap-4">
+              <div className="flex items-center gap-2 bg-zinc-900 rounded-xl p-2 border border-zinc-800">
+                <button
+                  onClick={() => removeBackground(modalSvgContainerRef.current!)}
+                  className="px-4 py-2.5 text-sm font-bold bg-zinc-800 hover:bg-red-500/20 hover:text-red-400 text-zinc-300 rounded-lg flex items-center gap-2 transition-colors whitespace-nowrap"
+                >
+                  <Scissors size={16} /> Borrar Fondo Completo
+                </button>
+                <div className="w-px h-8 bg-zinc-800 mx-2" />
+                <button
+                  onClick={() => setEditMode("color")}
+                  className={`px-4 py-2.5 text-sm font-bold rounded-lg flex items-center gap-2 transition-colors whitespace-nowrap ${editMode === "color"
+                    ? "bg-purple-500/20 text-purple-400 border border-purple-500/50"
+                    : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
+                    }`}
+                >
+                  <Palette size={16} /> Colorear Trazos
+                </button>
+                <button
+                  onClick={() => setEditMode("erase")}
+                  className={`px-4 py-2.5 text-sm font-bold rounded-lg flex items-center gap-2 transition-colors whitespace-nowrap ${editMode === "erase"
+                    ? "bg-purple-500/20 text-purple-400 border border-purple-500/50"
+                    : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
+                    }`}
+                >
+                  <Eraser size={16} /> Goma de Borrar
+                </button>
+              </div>
+
+              {editMode === "color" && (
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
+                  className="flex items-center gap-3 bg-zinc-900 rounded-xl p-2.5 border border-zinc-800"
+                >
+                  {["#a855f7", "#3b82f6", "#ef4444", "#22c55e", "#f59e0b", "#ffffff", "#000000"].map((color) => (
+                    <button
+                      key={color}
+                      onClick={() => setSelectedColor(color)}
+                      className={`w-8 h-8 rounded-full border-2 transition-transform shadow-lg ${selectedColor === color
+                        ? "border-white scale-125"
+                        : "border-zinc-700 hover:scale-110"
+                        }`}
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                  <div className="w-px h-8 bg-zinc-800 mx-1" />
+                  <button
+                    onClick={async () => {
+                      // @ts-ignore - EyeDropper API is not fully typed yet
+                      if (window.EyeDropper) {
+                        try {
+                          // @ts-ignore
+                          const eyeDropper = new window.EyeDropper();
+                          const result = await eyeDropper.open();
+                          setSelectedColor(result.sRGBHex);
+                        } catch (e) {
+                          console.log("EyeDropper cancelado o con error");
+                        }
+                      } else {
+                        alert("La herramienta cuentagotas no está soportada en tu navegador. Usa el selector de color clásico.");
+                      }
+                    }}
+                    className="w-9 h-9 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 flex items-center justify-center transition-colors shadow-lg border border-zinc-700"
+                    title="Cuentagotas (Seleccionar color de la pantalla)"
+                  >
+                    <Pipette size={18} />
+                  </button>
+                  <div className="relative w-9 h-9 rounded-lg overflow-hidden shadow-lg border-2 border-zinc-700 hover:border-zinc-400 transition-colors cursor-pointer">
+                    <input
+                      type="color"
+                      value={selectedColor}
+                      onChange={(e) => setSelectedColor(e.target.value)}
+                      className="absolute -top-4 -left-4 w-16 h-16 cursor-pointer border-0 p-0"
+                    />
+                  </div>
+                </motion.div>
+              )}
             </div>
           </motion.div>
         )}
