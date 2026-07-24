@@ -84,10 +84,6 @@ export default function Configuracion() {
     }
   };
 
-  const handlePresetBackground = (imageUrl: string) => {
-    setBackgroundImage(imageUrl);
-    addSavedImage(imageUrl);
-  };
 
   const openFileExplorer = () => {
     fileInputRef.current?.click();

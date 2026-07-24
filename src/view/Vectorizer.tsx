@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   UploadCloud,
@@ -6,7 +6,6 @@ import {
   Download,
   Code,
   Settings2,
-  Target,
   Zap,
   Image as ImageIcon,
   Check,
@@ -429,10 +428,10 @@ export default function Vectorizer() {
                   <div className="w-px h-8 bg-zinc-800 mx-1" />
                   <button
                     onClick={async () => {
-                      // @ts-ignore - EyeDropper API is not fully typed yet
+                      // @ts-expect-error - EyeDropper API is not fully typed yet
                       if (window.EyeDropper) {
                         try {
-                          // @ts-ignore
+                          // @ts-expect-error
                           const eyeDropper = new window.EyeDropper();
                           const result = await eyeDropper.open();
                           setSelectedColor(result.sRGBHex);

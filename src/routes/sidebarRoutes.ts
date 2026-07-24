@@ -3,6 +3,7 @@ import { Home, FileText, CalendarCheck, PieChart } from "lucide-react";
 import IconGenerator from "../view/IconGenerator";
 import { ImageConverter } from "../view/ImageConverter";
 import { PaletteExtractor } from "../view/PaletteExtractor";
+import PaletteColors from "../view/PaletteColors";
 import { BackgroundRemover } from "../view/Backgroundremover";
 import Vectorizer from "../view/Vectorizer.tsx";
 import Configuracion from "../view/Configurancion.tsx";
@@ -42,9 +43,15 @@ export const SIDEBAR_MENU_ITEMS: MenuItem[] = [
   },
   {
     id: "Paleta",
-    label: "Paleta Colores",
+    label: "Extraer Paleta Color",
     icon: CalendarCheck,
     component: PaletteExtractor,
+  },
+  {
+    id: "PaletasGuardadas",
+    label: "Paleta de color",
+    icon: CalendarCheck,
+    component: PaletteColors,
   },
   {
     id: "Conversor",

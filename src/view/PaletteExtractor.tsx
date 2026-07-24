@@ -1,9 +1,15 @@
+import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Palette, Copy, Check, Droplet, Target } from "lucide-react";
+import { Palette, Copy, Check, Droplet, Target, Save } from "lucide-react";
 import { usePaletteExtractorViewModel } from "../viewModel/Usepaletteextractorviewmodel";
+import { useSavedPalettes } from "../viewModel/useSavedPalettes";
+import { gooeyToast } from "goey-toast";
 
 export function PaletteExtractor() {
   const vm = usePaletteExtractorViewModel();
+  const { savePalette } = useSavedPalettes();
+  const [showNameModal, setShowNameModal] = useState(false);
+  const [paletteName, setPaletteName] = useState("");
   const {
     state,
     fileInputRef,
@@ -170,6 +176,14 @@ export function PaletteExtractor() {
                   <h3 className="text-xl font-bold text-white flex items-center gap-2">
                     Colores Dominantes
                   </h3>
+                  {palette.length > 0 && (
+                    <button
+                      onClick={() => setShowNameModal(true)}
+                      className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] flex items-center gap-2 text-sm"
+                    >
+                      <Save size={16} /> Guardar Paleta
+                    </button>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -298,6 +312,68 @@ export function PaletteExtractor() {
                 )}
               </div>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modal para Nombre de Paleta */}
+      <AnimatePresence>
+        {showNameModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl flex flex-col gap-4"
+            >
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <Palette size={20} className="text-emerald-500" /> Guardar Paleta
+              </h3>
+              <p className="text-zinc-400 text-sm">
+                Ingresa un nombre para identificar esta paleta.
+              </p>
+              <input
+                autoFocus
+                type="text"
+                value={paletteName}
+                onChange={(e) => setPaletteName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    savePalette(palette, paletteName.trim());
+                    gooeyToast.success("¡Paleta guardada exitosamente!");
+                    setShowNameModal(false);
+                    setPaletteName("");
+                  }
+                  if (e.key === 'Escape') setShowNameModal(false);
+                }}
+                placeholder="Ej. Colores de Otoño, Tema Oscuro..."
+                className="w-full px-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition-colors"
+              />
+              <div className="flex justify-end gap-2 mt-2">
+                <button
+                  onClick={() => setShowNameModal(false)}
+                  className="px-4 py-2 font-semibold text-zinc-400 hover:text-white transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={() => {
+                    savePalette(palette, paletteName.trim());
+                    gooeyToast.success("¡Paleta guardada exitosamente!");
+                    setShowNameModal(false);
+                    setPaletteName("");
+                  }}
+                  className="px-6 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl transition-all shadow-lg"
+                >
+                  Guardar
+                </button>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
