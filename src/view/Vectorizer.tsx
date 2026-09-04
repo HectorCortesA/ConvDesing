@@ -431,7 +431,7 @@ export default function Vectorizer() {
                       // @ts-expect-error - EyeDropper API is not fully typed yet
                       if (window.EyeDropper) {
                         try {
-                          // @ts-expect-error
+                          // @ts-expect-error - EyeDropper API is not fully typed yet
                           const eyeDropper = new window.EyeDropper();
                           const result = await eyeDropper.open();
                           setSelectedColor(result.sRGBHex);

@@ -104,8 +104,9 @@ export default function PaletteColors() {
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
         draggable={!isEditing}
-        onDragStart={(e: any) => {
-          e.dataTransfer.setData("text/plain", palette.id);
+        onDragStart={(e) => {
+          const dragEvent = e as unknown as React.DragEvent<HTMLDivElement>;
+          dragEvent.dataTransfer?.setData("text/plain", palette.id);
         }}
         className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all group flex flex-col cursor-grab active:cursor-grabbing"
       >
